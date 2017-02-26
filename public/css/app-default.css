@@ -1,0 +1,15 @@
+/* Material UI Stylings */
+.md-inline-panel {max-width: 960px; margin: auto;}
+.md-dialog-content {min-width: 640px;}
+
+/* Crop Dialog Styling */
+.cropArea {
+  background: #E4E4E4;
+  overflow: hidden;
+  width:300px;
+  height:300px;
+}
+.cropResult {
+  display: block;
+  margin: auto;
+}

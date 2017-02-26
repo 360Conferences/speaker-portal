@@ -1,0 +1,31 @@
+<md-dialog aria-label="Profile Image">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Crop Image and Upload</h2>
+      <span flex></span>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <div class="md-dialog-content" layout="row">
+      <div layout="column">
+        <div class="cropArea" ngf-drop ng-model="picFile" ngf-pattern="image/*" layout="column">
+            <img-crop image="picFile  | ngfDataUrl"
+                      area-type="square"
+                      on-load-done="onLoadDone()"
+                      result-image="croppedDataUrl" ng-init="croppedDataUrl=''">
+            </img-crop>
+        </div>
+        <md-button class="md-raised md-primary" ngf-select
+                   ng-model="picFile" accept="image/*">Select Picture</md-button>
+      </div>
+      <div flex layout-align="center">
+          <img class="cropResult" ng-src="{{croppedDataUrl}}" />
+      </div>
+    </div>
+  </md-dialog-content>
+
+  <md-dialog-actions layout="row">
+    <md-button ng-click="cancel()">Cancel</md-button>
+    <md-button ng-click="save(croppedDataUrl)">Save</md-button>
+  </md-dialog-actions>
+</md-dialog>

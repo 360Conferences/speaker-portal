@@ -1,0 +1,183 @@
+<html ng-app="AnDevSpeakerApp">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+    <script src="/js/speaker-app.js"></script>
+    <!-- ngImageCrop -->
+    <script src="/js/ng-img-crop.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ng-img-crop.css">
+    <!-- ngFileUpload -->
+    <script src="/js/ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
+    <script src="/js/ng-file-upload.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/app-default.css">
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBox_RvfqnAPxCMZCmAbeE7KEkjQ0Isqa0",
+        authDomain: "andev-app.firebaseapp.com",
+        databaseURL: "https://andev-app.firebaseio.com",
+        storageBucket: "andev-app.appspot.com",
+        messagingSenderId: "190191541520"
+      };
+      firebase.initializeApp(config);
+    </script>
+  </head>
+
+  <body class="site-content-body" ng-controller="AuthCtrl" ng-cloak layout="row">
+    <div layout="column" flex>
+      <md-toolbar md-whiteframe class="site-content-toolbar">
+        <div class="md-toolbar-tools">
+          <h2 flex md-truncate>{{eventName}} {{eventYear}}</h2>
+          <md-button class="md-raised md-primary"
+                     ng-click="logoutUser()" ng-show="firebaseUser">Log Out</md-button>
+        </div>
+      </md-toolbar>
+
+      <md-content>
+        <!-- Logged Out View -->
+        <div ng-hide="firebaseUser" class="md-inline-panel">
+          <md-card md-theme="cardTheme">
+            <md-toolbar>
+              <div class="md-toolbar-tools">
+                <h3 flex md-truncate>Login Required</h3>
+              </div>
+            </md-toolbar>
+            <md-content layout-padding>
+              <div layout="column" layout-align="center center">
+                <img src="/images/logo-banner.png" />
+                <p>
+                  Welcome to the {{eventName}} {{eventYear}} call for papers.
+                  To submit a talk proposal, please log in using your Google account.
+                  You can return to this page anytime to manage your speaker
+                  profile and talk information.
+                </p>
+                <md-button class="md-raised md-primary"
+                           ng-click="loginUser()">Sign In With Google</md-button>
+              </div>
+            </md-content>
+          </md-card>
+        </div>
+
+        <!-- Logged In View -->
+        <div ng-controller="SpeakerCtrl" ng-show="firebaseUser" layout="column" class="md-inline-panel" flex>
+          <md-card md-theme="cardTheme">
+            <md-toolbar>
+              <div class="md-toolbar-tools">
+                <h3 flex md-truncate>Speaker Info</h3>
+              </div>
+            </md-toolbar>
+            <md-content layout-padding>
+              <div>
+                <form name="speakerForm" novalidate ng-submit="saveProfile()">
+
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Name</label>
+                    <input required ng-model="speaker.name" />
+                  </md-input-container>
+
+                  <div layout-gt-sm="row">
+                    <md-input-container class="md-block" flex-gt-sm>
+                      <label>Title</label>
+                      <input required ng-model="speaker.title" />
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                      <label>Company</label>
+                      <input required ng-model="speaker.company" />
+                    </md-input-container>
+                  </div>
+
+                  <div layout-gt-sm="row">
+                    <md-input-container class="md-block" flex-gt-sm>
+                      <label>Email</label>
+                      <input required type="email" ng-model="speaker.email" />
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                      <label>Twitter URL</label>
+                      <input required type="url" ng-model="speaker.twitter" />
+                    </md-input-container>
+                  </div>
+
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Speaker Bio</label>
+                    <textarea required ng-model="speaker.bio"
+                              md-maxlength="750" rows="5" md-select-on-focus>
+                    </textarea>
+                  </md-input-container>
+
+                  <div style="width: 200px; height: 200px; position: relative;">
+                    <img id="speaker-image" width="200px" height="200px" ng-src="{{avatarUrl}}"/>
+                    <md-progress-circular style="position: absolute; top: 50px; left: 50px;"
+                        md-mode="indeterminate" md-diameter="100"
+                        ng-show="showUploadProgress" >
+                    </md-progress-circular>
+                  </div>
+                  <md-button class="md-raised md-primary"
+                             ng-click="cropImage($event)">Upload Image</md-button>
+
+                  <md-card-actions layout="row" layout-align="end center">
+                    <md-button type="submit">Save Profile</md-button>
+                  </md-card-actions>
+
+                </form>
+              </div>
+            </md-content>
+          </md-card>
+
+          <!-- Submissions list -->
+          <div ng-controller="SubmissionCtrl">
+            <md-card md-theme="cardTheme">
+              <md-toolbar>
+                <div class="md-toolbar-tools">
+                  <h3 flex md-truncate>My Talks</h3>
+                  <span flex></span>
+                  <md-button class="md-icon-button" aria-label="Add"
+                             ng-click="addSubmission($event)">
+                    <md-icon>add</md-icon>
+                  </md-button>
+                </div>
+              </md-toolbar>
+
+              <md-content>
+                <md-list flex>
+                  <md-list-item class="md-2-line md-long-text"
+                                ng-repeat="item in submissions"
+                                ng-click="editSubmission($event,item)">
+                    <div class="md-list-item-text" layout="column">
+                      <h3>{{ item.title }}</h3>
+                      <p>{{ item.abstract }}</p>
+                    </div>
+                    <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
+                               ng-click="deleteSubmission($event,item)">
+                      <md-icon>delete</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+                <div ng-hide="submissions.length">
+                  <h3 align="center">
+                    Create your first talk submission using the Add button in
+                    the toolbar.
+                  </h3>
+                </div>
+              </md-content>
+            </md-card>
+
+          </div>
+        </div>
+      </md-content>
+    </div>
+  </body>
+</html>

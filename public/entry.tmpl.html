@@ -1,0 +1,32 @@
+<md-dialog aria-label="Talk Submission">
+  <form ng-cloak name="entryForm" ng-submit="save(entry)">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Talk Submission</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Title</label>
+          <input required name="entryTitle" ng-model="entry.title" />
+        </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Abstract</label>
+          <textarea required name="entryAbstract"
+                    ng-model="entry.abstract"
+                    md-maxlength="1500" rows="10" md-select-on-focus>
+          </textarea>
+        </md-input-container>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="cancel()">Cancel</md-button>
+      <md-button type="submit">Save</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
