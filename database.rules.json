@@ -1,6 +1,16 @@
 {
   "rules": {
-    "2016": {
+    "$year": {
+      "profiles": {
+        "$uid": {
+          ".read": "auth.uid != null",
+          ".write": "auth.uid == $uid"
+        }
+      },
+      "submissions": {
+        ".read": "auth.uid != null",
+        ".write": "auth.uid != null"
+      },
       "sessions": {
         ".read": true,
         ".write": false
@@ -10,24 +20,12 @@
         ".write": false
       },
       "venue": {
-        ".read": true,
+         ".read": true,
         ".write": false
       },
       "feedback": {
         ".read": true,
-        ".write": true
-      }
-    },
-    "2017": {
-      "profiles": {
-        "$uid": {
-          ".read": true,
-          ".write": "auth.uid == $uid"
-        }
-      },
-      "submissions": {
-        ".read": true,
-        ".write": "auth.uid != null"
+        ".write": false
       }
     }
   }
