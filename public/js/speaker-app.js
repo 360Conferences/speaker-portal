@@ -69,6 +69,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth) {
   // add config parameters
   $scope.eventName = CONF_NAME;
   $scope.eventYear = CONF_YEAR;
+  $scope.twitterPattern = "@.*";
 
   // login button function
   $scope.loginUser = function() {

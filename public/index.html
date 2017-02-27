@@ -94,39 +94,57 @@
             <md-content layout-padding>
               <div>
                 <form name="speakerForm" novalidate ng-submit="saveProfile()">
-
                   <md-input-container class="md-block" flex-gt-sm>
                     <label>Name</label>
-                    <input required ng-model="speaker.name" />
+                    <input required name="speakerName" ng-model="speaker.name" />
+                    <div ng-messages="speakerForm.speakerName.$error">
+                      <div ng-message="required">This is required.</div>
+                    </div>
                   </md-input-container>
 
                   <div layout-gt-sm="row">
                     <md-input-container class="md-block" flex-gt-sm>
                       <label>Title</label>
-                      <input required ng-model="speaker.title" />
+                      <input ng-model="speaker.title" />
                     </md-input-container>
                     <md-input-container class="md-block" flex-gt-sm>
                       <label>Company</label>
-                      <input required ng-model="speaker.company" />
+                      <input required name="speakerCompany" ng-model="speaker.company" />
+                      <div ng-messages="speakerForm.speakerCompany.$error">
+                        <div ng-message="required">This is required.</div>
+                      </div>
                     </md-input-container>
                   </div>
 
                   <div layout-gt-sm="row">
                     <md-input-container class="md-block" flex-gt-sm>
                       <label>Email</label>
-                      <input required type="email" ng-model="speaker.email" />
+                      <input required name="speakerEmail" type="email" ng-model="speaker.email" />
+                      <div ng-messages="speakerForm.speakerEmail.$error">
+                        <div ng-message-exp="['required','email']">
+                          You must provide a valid email.
+                        </div>
+                      </div>
                     </md-input-container>
                     <md-input-container class="md-block" flex-gt-sm>
-                      <label>Twitter URL</label>
-                      <input required type="url" ng-model="speaker.twitter" />
+                      <label>Twitter Handle (including '@' prefix)</label>
+                      <input required name="speakerTwitter" ng-pattern="twitterPattern" ng-model="speaker.twitter" />
+                      <div ng-messages="speakerForm.speakerTwitter.$error">
+                        <div ng-message-exp="['required','pattern']">
+                          You must provide a valid Twitter handle, starting with the '@' symbol.
+                        </div>
+                      </div>
                     </md-input-container>
                   </div>
 
                   <md-input-container class="md-block" flex-gt-sm>
                     <label>Speaker Bio</label>
-                    <textarea required ng-model="speaker.bio"
+                    <textarea required name="speakerBio" ng-model="speaker.bio"
                               md-maxlength="750" rows="5" md-select-on-focus>
                     </textarea>
+                    <div ng-messages="speakerForm.speakerBio.$error">
+                      <div ng-message="required">This is required.</div>
+                    </div>
                   </md-input-container>
 
                   <div style="width: 200px; height: 200px; position: relative;">
@@ -153,7 +171,7 @@
             <md-card md-theme="cardTheme">
               <md-toolbar>
                 <div class="md-toolbar-tools">
-                  <h3 flex md-truncate>My Talks</h3>
+                  <h3 flex md-truncate>Submitted Talks</h3>
                   <span flex></span>
                   <md-button class="md-icon-button" aria-label="Add"
                              ng-click="addSubmission($event)">
@@ -163,14 +181,17 @@
               </md-toolbar>
 
               <md-content>
-                <md-list flex>
+                <md-list flex layout-padding>
                   <md-list-item class="md-2-line md-long-text"
-                                ng-repeat="item in submissions"
-                                ng-click="editSubmission($event,item)">
+                                ng-repeat="item in submissions">
                     <div class="md-list-item-text" layout="column">
                       <h3>{{ item.title }}</h3>
                       <p>{{ item.abstract }}</p>
                     </div>
+                    <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Edit"
+                               ng-click="editSubmission($event,item)">
+                      <md-icon>edit</md-icon>
+                    </md-button>
                     <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
                                ng-click="deleteSubmission($event,item)">
                       <md-icon>delete</md-icon>
