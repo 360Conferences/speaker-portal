@@ -1,6 +1,3 @@
-// Config Constants
-var CONF_NAME = "360|AnDev";
-var CONF_YEAR = "2017";
 // Storage and Data Constants
 var CONFIG_URL = "config";
 var PROFILE_URL = "2017/profiles";

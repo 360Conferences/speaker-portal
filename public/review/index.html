@@ -1,0 +1,108 @@
+<html ng-app="AnDevReviewerApp">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+    <script src="/js/reviewer-app.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/app-default.css">
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBox_RvfqnAPxCMZCmAbeE7KEkjQ0Isqa0",
+        authDomain: "andev-app.firebaseapp.com",
+        databaseURL: "https://andev-app.firebaseio.com",
+        storageBucket: "andev-app.appspot.com",
+        messagingSenderId: "190191541520"
+      };
+      firebase.initializeApp(config);
+    </script>
+  </head>
+
+  <body class="site-content-body" ng-controller="AuthCtrl" ng-cloak layout="row">
+    <div layout="column" flex>
+      <md-toolbar md-whiteframe class="site-content-toolbar">
+        <div class="md-toolbar-tools">
+          <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Reviews</h2>
+          <p>{{firebaseUser.email}}</p>
+          <md-menu>
+            <md-button class="md-icon-button" aria-label="More"
+                       ng-click="$mdOpenMenu()"
+                       ng-show="firebaseUser">
+              <md-icon md-menu-origin>more_vert</md-icon>
+            </md-button>
+            <md-menu-content width="3">
+              <md-menu-item>
+                <md-button ng-click="logoutUser()">Log Out</md-button>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
+        </div>
+      </md-toolbar>
+
+      <md-content>
+        <!-- Logged Out View -->
+        <div ng-hide="firebaseUser" class="md-inline-panel">
+          <md-card md-theme="cardTheme">
+            <md-toolbar>
+              <div class="md-toolbar-tools">
+                <h3 flex md-truncate>Login Required</h3>
+              </div>
+            </md-toolbar>
+            <md-content layout-padding>
+              <div layout="column" layout-align="center center">
+                <img src="/images/logo-banner.png" />
+                <p>
+                  Welcome to the {{config.event_name}} {{config.event_year}} reviewers app.
+                  To review this year's submissions, please log in using your Google account.
+
+                  [TBD: REVIEWER INSTRUCTIONS]
+                </p>
+                <md-button class="md-raised md-primary"
+                           ng-click="loginUser()">Sign In With Google</md-button>
+              </div>
+            </md-content>
+          </md-card>
+        </div>
+        <!-- Logged In View -->
+        <div ng-controller="ReviewCtrl" ng-show="firebaseUser" layout="column" class="md-inline-panel" flex>
+          <!-- TODO: Check for existing speaker profile and block if exists -->
+
+          <md-card md-theme="cardTheme" ng-repeat="item in submissions">
+            <md-content layout-padding>
+              <div layout="column">
+                <h3>{{ item.title }}</h3>
+                <p style="white-space: pre-line;">{{ item.abstract }}</p>
+                <!-- TODO: Attach this to model data -->
+                <md-input-container class="md-block" flex-gt-sm>
+                  <label>Review Score</label>
+                  <md-select ng-model="item.score">
+                    <md-option ng-repeat="score in scores" value="{{score.id}}">
+                      {{score.label}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm>
+                  <label>Comments</label>
+                  <input type="text" ng-model="item.comment" />
+                </md-input-container>
+              </div>
+            </md-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+  </body>
+</html>
