@@ -1,5 +1,9 @@
 {
   "rules": {
+    "config": {
+      ".read": true,
+      ".write": false
+    },
     "$year": {
       "profiles": {
         "$uid": {

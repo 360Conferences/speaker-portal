@@ -41,7 +41,7 @@
     <div layout="column" flex>
       <md-toolbar md-whiteframe class="site-content-toolbar">
         <div class="md-toolbar-tools">
-          <h2 flex md-truncate>{{eventName}} {{eventYear}}</h2>
+          <h2 flex md-truncate>{{config.event_name}} {{config.event_year}}</h2>
           <p>{{firebaseUser.email}}</p>
           <md-menu>
             <md-button class="md-icon-button" aria-label="More"
@@ -71,7 +71,7 @@
               <div layout="column" layout-align="center center">
                 <img src="/images/logo-banner.png" />
                 <p>
-                  Welcome to the {{eventName}} {{eventYear}} call for papers.
+                  Welcome to the {{config.event_name}} {{config.event_year}} call for papers.
                   To submit a talk proposal, please log in using your Google account.
                   You can return to this page anytime to manage your speaker
                   profile and talk information.
@@ -174,7 +174,7 @@
                   <h3 flex md-truncate>Submitted Talks</h3>
                   <span flex></span>
                   <md-button class="md-icon-button" aria-label="Add"
-                             ng-click="addSubmission($event)">
+                             ng-show="config.cfp_open" ng-click="addSubmission($event)">
                     <md-icon>add</md-icon>
                   </md-button>
                 </div>
@@ -193,7 +193,7 @@
                       <md-icon>edit</md-icon>
                     </md-button>
                     <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
-                               ng-click="deleteSubmission($event,item)">
+                               ng-show="config.cfp_open" ng-click="deleteSubmission($event,item)">
                       <md-icon>delete</md-icon>
                     </md-button>
                   </md-list-item>

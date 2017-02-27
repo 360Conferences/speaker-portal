@@ -2,6 +2,7 @@
 var CONF_NAME = "360|AnDev";
 var CONF_YEAR = "2017";
 // Storage and Data Constants
+var CONFIG_URL = "config";
 var PROFILE_URL = "2017/profiles";
 var SUBMISSION_URL = "2017/submissions";
 var PLACEHOLDER_IMG = "/images/placeholder.png";
@@ -38,6 +39,18 @@ app.factory("Profile", ["$firebaseObject",
   }
 ]);
 
+// Retrieve the app config object
+app.factory("Config", ["$firebaseObject",
+  function($firebaseObject) {
+    return function() {
+      var ref = firebase.database().ref(CONFIG_URL);
+
+      // return it as a synchronized object
+      return $firebaseObject(ref);
+    }
+  }
+]);
+
 // Pass in a uid and get back their profile image
 app.factory("Avatar", ["$firebaseStorage",
   function($firebaseStorage) {
@@ -65,11 +78,10 @@ app.factory("Submission", ["$firebaseObject",
 ]);
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
   // add config parameters
-  $scope.eventName = CONF_NAME;
-  $scope.eventYear = CONF_YEAR;
   $scope.twitterPattern = "@.*";
+  $scope.config = Config();
 
   // login button function
   $scope.loginUser = function() {
