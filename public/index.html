@@ -94,6 +94,11 @@
             <md-content layout-padding>
               <div layout="column">
                 <form name="speakerForm" novalidate ng-submit="saveProfile()">
+                  <p>
+                    Please provide the following information for your speaker
+                    profile. We will display this on the {{config.event_name}}
+                    site, in the mobile app, and on your conference badge.
+                  </p>
                   <md-input-container class="md-block" flex-gt-sm>
                     <label>Name</label>
                     <input required name="speakerName" ng-model="speaker.name" />
@@ -199,7 +204,7 @@
                                 ng-repeat="item in submissions">
                     <div class="md-list-item-text" layout="column">
                       <h3>{{ item.title }}</h3>
-                      <p>{{ item.abstract }}</p>
+                      <p style="white-space: pre-line;">{{ item.abstract }}</p>
                     </div>
                     <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Edit"
                                ng-click="editSubmission($event,item)">

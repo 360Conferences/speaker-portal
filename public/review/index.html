@@ -67,21 +67,6 @@
                 <p>
                   Welcome to the {{config.event_name}} {{config.event_year}} reviewers app.
                   To review this year's submissions, please log in using your Google account.
-                  <br /><br />
-                  Please rate every session on a scale of 1-5; 1 being a session
-                  you feel doesn't belong at {{config.event_name}} and 5 being a
-                  session you would drop EVERYTHING to attend. You can optionally
-                  add comments if you would like to add more detail to a score.
-                  <br /><br />
-                  <strong>Note:</strong> Please do not give a 5 rating to more
-                  than 20 sessions.
-                  <br /><br />
-                  Any talks you submitted yourself will be hidden in your list to
-                  avoid conflicts.
-                  <br /><br />
-                  We know there are a lot of submissions! Your work is saved
-                  automatically, so feel free to take a break and come back later
-                  to finish the reviews.
                 </p>
                 <md-button class="md-raised md-primary"
                            ng-click="loginUser()">Sign In With Google</md-button>
@@ -92,6 +77,32 @@
 
         <!-- Logged In View -->
         <div ng-controller="ReviewCtrl" ng-show="firebaseUser" layout="column" class="md-inline-panel" flex>
+
+          <md-card md-theme="cardTheme">
+            <md-toolbar>
+              <div class="md-toolbar-tools">
+                <h3 flex md-truncate>Reviewer Instructions</h3>
+              </div>
+            </md-toolbar>
+            <md-content layout-padding>
+              <p>
+                Please rate every session on a scale of 1-5; 1 being a session
+                you feel doesn't belong at {{config.event_name}} and 5 being a
+                session you would drop EVERYTHING to attend. You can optionally
+                add comments if you would like to add more detail to a score.
+                <br /><br />
+                <strong>Note:</strong> Please do not give a 5 rating to more
+                than 20 sessions.
+                <br /><br />
+                Any talks you submitted yourself will be hidden in your list to
+                avoid conflicts.
+                <br /><br />
+                We know there are a lot of submissions! Your work is saved
+                automatically, so feel free to take a break and come back later
+                to finish the reviews.
+              </p>
+            </md-content>
+          </md-card>
 
           <md-card md-theme="cardTheme" ng-repeat="item in submissions"
                    ng-hide="item.speaker_id === firebaseUser.uid">
