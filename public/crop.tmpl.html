@@ -10,7 +10,10 @@
       <div layout="column">
         <div class="cropArea" ngf-drop ng-model="picFile" ngf-pattern="image/*" layout="column">
             <img-crop image="picFile  | ngfDataUrl"
-                      area-type="square"
+                      area-type="circle"
+                      result-image-size="300"
+                      result-image-format="image/jpeg"
+                      result-image-quality="0.85"
                       on-load-done="onLoadDone()"
                       result-image="croppedDataUrl" ng-init="croppedDataUrl=''">
             </img-crop>

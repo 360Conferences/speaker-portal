@@ -147,6 +147,10 @@
                     </div>
                   </md-input-container>
 
+                  <p>
+                    Please upload an image for us to use on your speaker profile.
+                    The image should be at least 300x300 resolution.
+                  </p>
                   <div style="width: 200px; height: 200px; position: relative;">
                     <img id="speaker-image" width="200px" height="200px" ng-src="{{avatarUrl}}"/>
                     <md-progress-circular style="position: absolute; top: 50px; left: 50px;"
@@ -156,6 +160,8 @@
                   </div>
                   <md-button class="md-raised md-primary"
                              ng-click="cropImage($event)">Upload Profile Image</md-button>
+
+                  <br /><br />
                   <div layout="row" layout-align="end">
                     <md-checkbox ng-model="speaker.agree_terms" aria-label="Agree Terms">
                       I have read and agree to abide by the event

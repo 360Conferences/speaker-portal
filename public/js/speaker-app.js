@@ -199,7 +199,7 @@ app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToas
     var firebaseUser = $scope.firebaseUser;
     var storage = Avatar(firebaseUser.uid);
 
-    var uploadTask = storage.$putString(croppedImage, "data_url", { contentType: "image/png" });
+    var uploadTask = storage.$putString(croppedImage, "data_url", { contentType: "image/jpeg" });
     uploadTask.$progress(function(snapshot) {
       $scope.showUploadProgress = true;
     });

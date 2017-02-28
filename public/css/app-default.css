@@ -12,4 +12,9 @@
 .cropResult {
   display: block;
   margin: auto;
+  border-radius: 150px;
+}
+
+#speaker-image {
+  border-radius: 100px;
 }
