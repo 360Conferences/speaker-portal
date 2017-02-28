@@ -67,8 +67,21 @@
                 <p>
                   Welcome to the {{config.event_name}} {{config.event_year}} reviewers app.
                   To review this year's submissions, please log in using your Google account.
-
-                  [TBD: REVIEWER INSTRUCTIONS]
+                  <br /><br />
+                  Please rate every session on a scale of 1-5; 1 being a session
+                  you feel doesn't belong at {{config.event_name}} and 5 being a
+                  session you would drop EVERYTHING to attend. You can optionally
+                  add comments if you would like to add more detail to a score.
+                  <br /><br />
+                  <strong>Note:</strong> Please do not give a 5 rating to more
+                  than 20 sessions.
+                  <br /><br />
+                  Any talks you submitted yourself will be hidden in your list to
+                  avoid conflicts.
+                  <br /><br />
+                  We know there are a lot of submissions! Your work is saved
+                  automatically, so feel free to take a break and come back later
+                  to finish the reviews.
                 </p>
                 <md-button class="md-raised md-primary"
                            ng-click="loginUser()">Sign In With Google</md-button>
@@ -76,27 +89,31 @@
             </md-content>
           </md-card>
         </div>
+
         <!-- Logged In View -->
         <div ng-controller="ReviewCtrl" ng-show="firebaseUser" layout="column" class="md-inline-panel" flex>
-          <!-- TODO: Check for existing speaker profile and block if exists -->
 
-          <md-card md-theme="cardTheme" ng-repeat="item in submissions">
+          <md-card md-theme="cardTheme" ng-repeat="item in submissions"
+                   ng-hide="item.speaker_id === firebaseUser.uid">
             <md-content layout-padding>
               <div layout="column">
                 <h3>{{ item.title }}</h3>
                 <p style="white-space: pre-line;">{{ item.abstract }}</p>
-                <!-- TODO: Attach this to model data -->
+
                 <md-input-container class="md-block" flex-gt-sm>
                   <label>Review Score</label>
-                  <md-select ng-model="item.score">
-                    <md-option ng-repeat="score in scores" value="{{score.id}}">
+                  <md-select ng-model="item.scores[firebaseUser.uid]"
+                             ng-change="submissions.$save(item)">
+                    <md-option ng-repeat="score in scores" ng-value="score.id">
                       {{score.label}}
                     </md-option>
                   </md-select>
                 </md-input-container>
+
                 <md-input-container class="md-block" flex-gt-sm>
                   <label>Comments</label>
-                  <input type="text" ng-model="item.comment" />
+                  <input type="text" ng-model="item.comments[firebaseUser.uid]"
+                                     ng-change="submissions.$save(item)"/>
                 </md-input-container>
               </div>
             </md-content>

@@ -68,10 +68,10 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
 app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
   $scope.scores = [
     {id: 1, label: "1 - Inappropriate"},
-    {id: 2, label: "2 - No Interest"},
-    {id: 3, label: "3 - Would attend if nothing else"},
-    {id: 4, label: "4 - Would make time to attend"},
-    {id: 5, label: "5 - Would skip meeting to attend"}
+    {id: 2, label: "2 - I'd rather be in the hallway"},
+    {id: 3, label: "3 - I would attend if nothing else were going on"},
+    {id: 4, label: "4 - I would like to attend this talk"},
+    {id: 5, label: "5 - OMG, I will make time to attend this talk"}
   ];
 
   // create an instance of the authentication service
@@ -81,6 +81,7 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
 
     // set up data binding
     var ref = firebase.database().ref(SUBMISSION_URL);
-    $scope.submissions = $firebaseArray(ref);
+    var query = ref.orderByChild("title");
+    $scope.submissions = $firebaseArray(query);
   });
 });
