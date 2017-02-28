@@ -92,7 +92,7 @@
               </div>
             </md-toolbar>
             <md-content layout-padding>
-              <div>
+              <div layout="column">
                 <form name="speakerForm" novalidate ng-submit="saveProfile()">
                   <md-input-container class="md-block" flex-gt-sm>
                     <label>Name</label>
@@ -155,10 +155,17 @@
                     </md-progress-circular>
                   </div>
                   <md-button class="md-raised md-primary"
-                             ng-click="cropImage($event)">Upload Image</md-button>
+                             ng-click="cropImage($event)">Upload Profile Image</md-button>
+                  <div layout="row" layout-align="end">
+                    <md-checkbox ng-model="speaker.agree_terms" aria-label="Agree Terms">
+                      I have read and agree to abide by the event
+                      <a href="http://www.360conferences.com/code-of-conduct" target="_blank">
+                        Code of Conduct</a> if selected as a speaker.
+                    </md-checkbox>
+                  </div>
 
                   <md-card-actions layout="row" layout-align="end center">
-                    <md-button type="submit">Save Profile</md-button>
+                    <md-button ng-disabled="!speaker.agree_terms" type="submit">Save Profile</md-button>
                   </md-card-actions>
 
                 </form>
