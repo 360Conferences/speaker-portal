@@ -8,14 +8,14 @@ var app = angular
     .config(function($mdThemingProvider) {
       // Main content theme
       $mdThemingProvider.theme('default')
-        .primaryPalette('blue')
+        .primaryPalette('teal')
         .accentPalette('red')
         .backgroundPalette('grey', {
           'default': '200'
         });
       // Card content theme
       $mdThemingProvider.theme('cardTheme')
-        .primaryPalette('blue')
+        .primaryPalette('teal')
         .accentPalette('red')
         .backgroundPalette('grey', {
           'default': '50'
