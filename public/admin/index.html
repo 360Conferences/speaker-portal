@@ -1,4 +1,4 @@
-<html ng-app="AnDevReviewerApp">
+<html ng-app="AnDevAdminApp">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Angular Material style sheet -->
@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
     <!-- AngularFire -->
     <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
-    <script src="/js/reviewer-app.js"></script>
+    <script src="/js/admin-app.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
     <script>
@@ -35,7 +35,7 @@
     <div ng-cloak layout="column" flex>
       <md-toolbar md-whiteframe class="site-content-toolbar">
         <div class="md-toolbar-tools">
-          <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Reviews</h2>
+          <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Admin</h2>
           <p>{{firebaseUser.email}}</p>
           <md-menu>
             <md-button class="md-icon-button" aria-label="More"
@@ -50,6 +50,10 @@
             </md-menu-content>
           </md-menu>
         </div>
+        <md-tabs ng-show="validAdminUser" md-selected="tabs.selectedIndex" md-stretch-tabs="always">
+          <md-tab id="tab1" aria-controls="tab1-content">Speakers</md-tab>
+          <md-tab id="tab2" aria-controls="tab2-content">Schedule</md-tab>
+        </md-tabs>
       </md-toolbar>
 
       <md-content>
@@ -65,8 +69,8 @@
               <div layout="column" layout-align="center center">
                 <img src="/images/logo-banner.png" />
                 <p>
-                  Welcome to the {{config.event_name}} {{config.event_year}} reviewers app.
-                  To review this year's submissions, please log in using your Google account.
+                  If you don't know where you are right now, you probably
+                  shouldn't be here.
                 </p>
                 <md-button class="md-raised md-primary"
                            ng-click="loginUser()">Sign In With Google</md-button>
@@ -76,61 +80,42 @@
         </div>
 
         <!-- Logged In View -->
-        <div ng-controller="ReviewCtrl" ng-show="firebaseUser" layout="column" class="md-inline-panel" flex>
+        <div ng-controller="AdminCtrl" ng-show="firebaseUser" layout="column">
 
-          <md-card md-theme="cardTheme">
+          <!-- Invalid User Card -->
+          <md-card ng-hide="validAdminUser" md-theme="cardTheme" class="md-inline-panel" flex>
             <md-toolbar>
               <div class="md-toolbar-tools">
-                <h3 flex md-truncate>Reviewer Instructions</h3>
+                <h3 flex md-truncate>Invalid Admin</h3>
               </div>
             </md-toolbar>
             <md-content layout-padding>
               <p>
-                Please rate every session on a scale of 1-5; 1 being a session
-                you feel doesn't belong at {{config.event_name}} and 5 being a
-                session you would drop EVERYTHING to attend. You can optionally
-                add comments if you would like to add more detail to a score.
-                <br /><br />
-                <strong>Note:</strong> Please do not give a 5 rating to more
-                than 20 sessions.
-                <br /><br />
-                Any talks you submitted yourself will be hidden in your list to
-                avoid conflicts.
-                <br /><br />
-                We know there are a lot of submissions! Your work is saved
-                automatically, so feel free to take a break and come back later
-                to finish the reviews.
+                I hate to tell you this, but your account is not a valid admin
+                account. You really shouldn't be here right now.
               </p>
             </md-content>
           </md-card>
 
-          <md-card md-theme="cardTheme" ng-repeat="item in submissions"
-                   ng-hide="item.speaker_id === firebaseUser.uid">
-            <md-content layout-padding>
-              <div layout="column">
-                <h3>{{ item.title }}</h3>
-                <p style="white-space: pre-line;">{{ item.abstract }}</p>
-
-                <md-input-container class="md-block" flex-gt-sm>
-                  <label>Review Score</label>
-                  <md-select ng-model="item.scores[firebaseUser.uid]"
-                             ng-change="submissions.$save(item)">
-                    <md-option ng-repeat="score in scores" ng-value="score.id">
-                      {{score.label}}
-                    </md-option>
-                  </md-select>
-                </md-input-container>
-
-                <md-input-container class="md-block" flex-gt-sm>
-                  <label>Comments</label>
-                  <input type="text" ng-model="item.comments[firebaseUser.uid]"
-                                     ng-change="submissions.$save(item)"/>
-                </md-input-container>
+          <!-- Real Content View -->
+          <div ng-show="validAdminUser">
+            <ng-switch on="tabs.selectedIndex" class="tabpanel-container">
+              <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0"
+                   md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()">
+                  View for Speakers<br />
+                  data.selectedIndex = 0
               </div>
-            </md-content>
-          </md-card>
+              <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1"
+                   md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()">
+                  View for Schedule<br />
+                  data.selectedIndex = 1
+              </div>
+            </ng-switch>
+          </div>
+
         </div>
       </md-content>
+
     </div>
   </body>
 </html>
