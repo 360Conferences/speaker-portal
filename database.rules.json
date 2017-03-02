@@ -7,9 +7,11 @@
     "$year": {
       "profiles": {
         "$uid": {
-          ".read": "auth.uid != null",
+          ".read": "auth.uid == $uid",
           ".write": "auth.uid == $uid"
-        }
+        },
+        ".read": "root.child('config/admins').hasChild(auth.uid)",
+        ".write": "root.child('config/admins').hasChild(auth.uid)"
       },
       "submissions": {
         ".read": "auth.uid != null",

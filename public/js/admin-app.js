@@ -2,6 +2,7 @@
 var CONFIG_URL = "config";
 var PROFILE_URL = "2017/profiles";
 var SUBMISSION_URL = "2017/submissions";
+var PLACEHOLDER_IMG = "/images/placeholder.png";
 
 var app = angular
     .module("AnDevAdminApp", ["firebase", "ngMaterial", "ngMessages"])
@@ -34,11 +35,27 @@ app.factory("Config", ["$firebaseObject",
   }
 ]);
 
+// Pass in a uid and get back their profile image
+app.factory("Avatar", ["$firebaseStorage",
+  function($firebaseStorage) {
+    return function(uid) {
+      var ref = firebase.storage().ref(PROFILE_URL);
+      var avatarRef = ref.child(uid);
+
+      // return it as a storage object
+      return $firebaseStorage(avatarRef);
+    }
+  }
+]);
+
 /* Controller to manage user login */
 app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
   // add config parameters
   $scope.config = Config();
   $scope.validAdminUser = false;
+  // Set the default selected tab
+  $scope.tabs = {};
+  $scope.tabs.selectedIndex = 0;
 
   // login button function
   $scope.loginUser = function() {
@@ -48,7 +65,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
     // login with Google
     auth.$signInWithPopup("google").then(function(firebaseUser) {
       $scope.firebaseUser = firebaseUser.user;
-      $scope.validAdminUser = $scope.config.admins.indexOf($scope.firebaseUser.uid) !== -1;
+      $scope.validAdminUser = $scope.firebaseUser.uid in $scope.config.admins;
     }).catch(function(error) {
       $scope.error = error;
       $scope.validAdminUser = false;
@@ -67,8 +84,49 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
   };
 });
 
-/* TODO */
-app.controller("AdminCtrl", function($scope, $firebaseAuth, $firebaseArray) {
-  $scope.tabs = {};
-  $scope.tabs.selectedIndex = 0;
+/* Controller to list and manage speaker profiles */
+app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $firebaseArray) {
+  // create an instance of the authentication service
+  var auth = $firebaseAuth();
+  auth.$onAuthStateChanged(function(firebaseUser) {
+    if (firebaseUser == null) return;
+
+    var ref = firebase.database().ref(PROFILE_URL);
+    var query = ref.orderByChild("name");
+
+    $scope.profiles = $firebaseArray(query);
+  });
+
+  $scope.twitterUrl = function(twitterHandle) {
+    return twitterHandle.replace('@', 'https://twitter.com/');
+  };
+});
+
+app.controller("ProfileItemCtrl", function($scope, Avatar) {
+  $scope.getAvatarUrl = function(item) {
+    if ($scope.firebaseUser == null) return;
+
+    Avatar(item.$id).$getDownloadURL().then(function(url) {
+      $scope.avatarUrl = url;
+    }).catch(function(error){
+      // Load placeholder image
+      $scope.avatarUrl = PLACEHOLDER_IMG;
+    });
+  };
+});
+
+/* Controller to list and manage session schedule */
+app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray) {
+  // create an instance of the authentication service
+  var auth = $firebaseAuth();
+  auth.$onAuthStateChanged(function(firebaseUser) {
+    if (firebaseUser == null) return;
+
+    var profileRef = firebase.database().ref(PROFILE_URL);
+    var submissionRef = firebase.database().ref(SUBMISSION_URL);
+    var query = submissionRef.orderByChild("title");
+
+    $scope.profiles = $firebaseObject(profileRef);
+    $scope.submissions = $firebaseArray(query);
+  });
 });
