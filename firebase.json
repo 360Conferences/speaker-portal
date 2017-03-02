@@ -6,6 +6,14 @@
     "public": "public",
     "rewrites": [
       {
+        "source": "/review/**",
+        "destination": "/review/index.html"
+      },
+      {
+        "source": "/admin/**",
+        "destination": "/admin/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
