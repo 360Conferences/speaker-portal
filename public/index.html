@@ -45,7 +45,6 @@
       <md-toolbar md-whiteframe class="site-content-toolbar">
         <div class="md-toolbar-tools">
           <h2 flex md-truncate>{{config.event_name}} {{config.event_year}}</h2>
-          <p>{{firebaseUser.email}}</p>
           <md-menu>
             <md-button class="md-icon-button" aria-label="More"
                        ng-click="$mdOpenMenu()"
@@ -53,6 +52,10 @@
               <md-icon md-menu-origin>more_vert</md-icon>
             </md-button>
             <md-menu-content width="3">
+              <md-menu-item>
+                <p>{{firebaseUser.email}}</p>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
               <md-menu-item>
                 <md-button ng-click="logoutUser()">Log Out</md-button>
               </md-menu-item>

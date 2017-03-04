@@ -18,3 +18,8 @@
 #speaker-image {
   border-radius: 100px;
 }
+#admin-toolbar {
+  height: 96px;
+  min-height: 96px;
+  max-height: 96px;
+}

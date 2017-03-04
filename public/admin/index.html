@@ -31,123 +31,121 @@
     </script>
   </head>
 
-  <body class="site-content-body" ng-controller="AuthCtrl" ng-cloak layout="row">
-    <div ng-cloak layout="column" flex>
-      <md-toolbar md-whiteframe class="site-content-toolbar">
-        <div class="md-toolbar-tools">
-          <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Admin</h2>
-          <p>{{firebaseUser.email}}</p>
-          <md-menu>
-            <md-button class="md-icon-button" aria-label="More"
-                       ng-click="$mdOpenMenu()"
-                       ng-show="firebaseUser">
-              <md-icon md-menu-origin>more_vert</md-icon>
-            </md-button>
-            <md-menu-content width="3">
-              <md-menu-item>
-                <md-button ng-click="logoutUser()">Log Out</md-button>
-              </md-menu-item>
-            </md-menu-content>
-          </md-menu>
-        </div>
-        <md-tabs ng-show="validAdminUser" md-selected="tabs.selectedIndex" md-stretch-tabs="always">
-          <md-tab id="tab1" aria-controls="tab1-content">Speakers</md-tab>
-          <md-tab id="tab2" aria-controls="tab2-content">Schedule</md-tab>
-        </md-tabs>
-      </md-toolbar>
+  <body class="site-content-body" ng-controller="AuthCtrl" ng-cloak layout="column">
+    <md-toolbar id="admin-toolbar" class="site-content-toolbar">
+      <div class="md-toolbar-tools">
+        <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Admin</h2>
+        <md-menu>
+          <md-button class="md-icon-button" aria-label="More"
+                     ng-click="$mdOpenMenu()"
+                     ng-show="firebaseUser">
+            <md-icon md-menu-origin>more_vert</md-icon>
+          </md-button>
+          <md-menu-content width="3">
+            <md-menu-item>
+              <p>{{firebaseUser.email}}</p>
+            </md-menu-item>
+            <md-menu-divider></md-menu-divider>
+            <md-menu-item>
+              <md-button ng-click="logoutUser()">Log Out</md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+      </div>
+      <md-tabs ng-show="validAdminUser" md-selected="tabs.selectedIndex" md-stretch-tabs="always">
+        <md-tab id="tab1" aria-controls="tab1-content">Speakers</md-tab>
+        <md-tab id="tab2" aria-controls="tab2-content">Submissions</md-tab>
+      </md-tabs>
+    </md-toolbar>
 
-      <md-content>
-        <!-- Logged Out View -->
-        <div ng-hide="firebaseUser" class="md-inline-panel">
-          <md-card md-theme="cardTheme">
-            <md-toolbar>
-              <div class="md-toolbar-tools">
-                <h3 flex md-truncate>Login Required</h3>
-              </div>
-            </md-toolbar>
-            <md-content layout-padding>
-              <div layout="column" layout-align="center center">
-                <img src="/images/logo-banner.png" />
-                <p>
-                  If you don't know where you are right now, you probably
-                  shouldn't be here.
-                </p>
-                <md-button class="md-raised md-primary"
-                           ng-click="loginUser()">Sign In With Google</md-button>
-              </div>
-            </md-content>
-          </md-card>
-        </div>
-
-        <!-- Logged In View -->
-        <div ng-show="firebaseUser" layout="column">
-
-          <!-- Invalid User Card -->
-          <md-card ng-hide="validAdminUser" md-theme="cardTheme" class="md-inline-panel" flex>
-            <md-toolbar>
-              <div class="md-toolbar-tools">
-                <h3 flex md-truncate>Invalid Admin</h3>
-              </div>
-            </md-toolbar>
-            <md-content layout-padding>
+    <md-content layout-padding flex>
+      <!-- Logged Out View -->
+      <div ng-hide="firebaseUser" class="md-inline-panel">
+        <md-card md-theme="cardTheme">
+          <md-toolbar>
+            <div class="md-toolbar-tools">
+              <h3 flex md-truncate>Login Required</h3>
+            </div>
+          </md-toolbar>
+          <md-content layout-padding>
+            <div layout="column" layout-align="center center">
+              <img src="/images/logo-banner.png" />
               <p>
-                I hate to tell you this, but your account is not a valid admin
-                account. You really shouldn't be here right now.
+                If you don't know where you are right now, you probably
+                shouldn't be here.
               </p>
-            </md-content>
-          </md-card>
+              <md-button class="md-raised md-primary"
+                         ng-click="loginUser()">Sign In With Google</md-button>
+            </div>
+          </md-content>
+        </md-card>
+      </div>
 
-          <!-- Real Content View -->
-          <div ng-show="validAdminUser">
-            <ng-switch on="tabs.selectedIndex" class="tabpanel-container">
-              <!-- Speaker Tab -->
-              <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0"
-                   md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                   ng-controller="SpeakerCtrl">
-                <h1>Profile Count: {{ profiles.length }}</h1>
-                <md-list flex layout-padding>
-                  <md-list-item class="md-2-line md-long-text"
-                                ng-repeat="item in profiles"
-                                ng-controller="ProfileItemCtrl">
-                    <div layout="row">
-                      <img style="border-radius: 32px; margin-right: 8px;" width="64px" height="64px" src="{{avatarUrl}}"
-                           ng-init="getAvatarUrl(item)" />
+      <!-- Logged In View -->
+      <div ng-show="firebaseUser" layout="column">
+
+        <!-- Invalid User Card -->
+        <md-card ng-hide="validAdminUser" md-theme="cardTheme" class="md-inline-panel" flex>
+          <md-toolbar>
+            <div class="md-toolbar-tools">
+              <h3 flex md-truncate>Invalid Admin</h3>
+            </div>
+          </md-toolbar>
+          <md-content layout-padding>
+            <p>
+              I hate to tell you this, but your account is not a valid admin
+              account. You really shouldn't be here right now.
+            </p>
+          </md-content>
+        </md-card>
+
+        <!-- Real Content View -->
+        <div ng-show="validAdminUser">
+          <ng-switch on="tabs.selectedIndex" class="tabpanel-container">
+            <!-- Speaker Tab -->
+            <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0"
+                 md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
+                 ng-controller="SpeakerCtrl">
+              <h2>Profile Count: {{ profiles.length }}</h2>
+              <md-card md-theme="cardTheme" ng-repeat="item in profiles">
+                <md-content ng-controller="ProfileItemCtrl" layout-padding>
+                  <div layout="row" layout-align="center center">
+                    <img style="border-radius: 32px;" width="64px" height="64px" src="{{avatarUrl}}"
+                         ng-init="getAvatarUrl(item)" />
+                    <md-list-item class="md-2-line">
                       <div class="md-list-item-text" layout="column">
                         <h3>{{ item.name }}</h3>
-                        <p>
-                          {{ item.company }}<br />
-                          <a ng-href="{{twitterUrl(item.twitter)}}" target="_blank">{{ item.twitter }}</a>
-                        </p>
+                        <p style="white-space: pre-line;">{{ item.company }}
+                          <a ng-href="{{twitterUrl(item.twitter)}}" target="_blank">{{ item.twitter }}</a></p>
                       </div>
-                    </div>
-                  </md-list-item>
-                </md-list>
+                    </md-list-item>
+                  </div>
+                </md-content>
+              </md-card>
 
-              </div>
-              <!-- Schedule Tab -->
-              <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1"
-                   md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                   ng-controller="ScheduleCtrl">
-                <h1>Submission Count: {{ submissions.length }}</h1>
-                <md-card ng-repeat="item in submissions">
-                 <md-content layout-padding>
-                   <md-list-item class="md-2-line md-long-text">
-                     <div class="md-list-item-text" layout="column">
-                       <h3>{{ item.title }}</h3>
-                       <h4>{{ profiles[item.speaker_id].name }}</h4>
-                       <p style="white-space: pre-line;">{{ item.abstract }}</p>
-                     </div>
-                   </md-list-item>
-                 </md-content>
-               </md-card>
+            </div>
+            <!-- Schedule Tab -->
+            <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1"
+                 md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
+                 ng-controller="ScheduleCtrl">
+              <h2>Submission Count: {{ submissions.length }}</h2>
+              <md-card md-theme="cardTheme" ng-repeat="item in submissions">
+               <md-content layout-padding>
+                 <md-list-item class="md-2-line md-long-text">
+                   <div class="md-list-item-text" layout="column">
+                     <h3>{{ item.title }}</h3>
+                     <h4>{{ profiles[item.speaker_id].name }}</h4>
+                     <p style="white-space: pre-line;">{{ item.abstract }}</p>
+                   </div>
+                 </md-list-item>
+               </md-content>
+             </md-card>
 
-              </div>
-            </ng-switch>
-          </div>
-
+            </div>
+          </ng-switch>
         </div>
-      </md-content>
 
-    </div>
+      </div>
+    </md-content>
   </body>
 </html>
