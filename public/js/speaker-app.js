@@ -218,7 +218,7 @@ app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToas
 });
 
 /* Controller to manage talk submissions */
-app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray, $mdDialog, Submission) {
+app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray, $mdDialog, $mdToast, Submission) {
   // create an instance of the authentication service
   var auth = $firebaseAuth();
   auth.$onAuthStateChanged(function(firebaseUser) {
@@ -232,8 +232,19 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray,
 
   // Add a new submission to the list
   $scope.addSubmission = function(evt) {
-    var entry = {};
-    ShowEntryDialog(evt, entry);
+    if($scope.speakerForm.$valid && $scope.speaker.agree_terms) {
+      // Simple check that the form was filled out
+      // Note: Doesn't actually check if profile saved.
+      var entry = {};
+      ShowEntryDialog(evt, entry);
+    } else {
+      // Show error toast
+      $mdToast.show(
+        $mdToast.simple()
+          .textContent('Please save your speaker profile first.')
+          .hideDelay(3000)
+      );
+    }
   };
 
   // Edit the selected item
