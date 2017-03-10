@@ -1,0 +1,22 @@
+<md-dialog aria-label="Talk Submission">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Talk Submission</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <h3>{{ entry.title }}</h3>
+        <h4>{{ speaker.name }}</h4>
+        <p style="white-space: pre-line;">{{ entry.abstract }}</p>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="close()">Close</md-button>
+    </md-dialog-actions>
+
+</md-dialog>

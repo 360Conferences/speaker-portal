@@ -116,7 +116,7 @@ app.controller("ProfileItemCtrl", function($scope, Avatar) {
 });
 
 /* Controller to list and manage session schedule */
-app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray) {
+app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray, $mdDialog) {
   // create an instance of the authentication service
   var auth = $firebaseAuth();
   auth.$onAuthStateChanged(function(firebaseUser) {
@@ -129,4 +129,39 @@ app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, 
     $scope.profiles = $firebaseObject(profileRef);
     $scope.submissions = $firebaseArray(query);
   });
+
+  $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
+    ShowEntryDialog(evt, submissionItem, profileItem);
+  }
+
+  function ShowEntryDialog(evt, submissionItem, profileItem) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'submission.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        entry: submissionItem,
+        speaker: profileItem
+      }
+    })
+    .then(function() {
+      // Dialog cancelled
+    });
+  }
+
+  // Handler for entry dialog events
+  function DialogController($scope, $mdDialog, entry, speaker) {
+    $scope.entry = entry;
+    $scope.speaker = speaker;
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.close = function() {
+      $mdDialog.hide();
+    };
+  }
 });
