@@ -130,13 +130,12 @@
                  ng-controller="ScheduleCtrl">
               <h2>Submission Count: {{ submissions.length }}</h2>
               <md-card md-theme="cardTheme" ng-repeat="item in submissions">
-                <md-content>
+                <md-content ng-controller="SubmissionItemCtrl" ng-init="computeReviewScore(item)">
                     <md-list-item class="md-2-line md-long-text"
                     layout="row" layout-align="center center"
                                  ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
                      <div class="score-container">
-                       <!-- TODO: Compute and display the real score -->
-                       <h2>0.0</h2>
+                       <h2>{{avgScore | number:1}}</h2>
                      </div>
                      <div class="md-list-item-text" layout="column">
                        <h3>{{ item.title }}</h3>

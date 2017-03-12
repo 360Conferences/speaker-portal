@@ -165,3 +165,24 @@ app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, 
     };
   }
 });
+
+app.controller("SubmissionItemCtrl", function($scope) {
+  // Only run on init/reload. Not currently data bound.
+  $scope.computeReviewScore = function(item) {
+    if ($scope.firebaseUser == null) return;
+
+    //Set the default value
+    $scope.avgScore = 0.0;
+    if (item.scores) {
+      var count = Object.keys(item.scores).length;
+      if (count > 0) {
+        var sum = 0.0;
+        for (var key in item.scores) {
+          sum += item.scores[key];
+        }
+
+        $scope.avgScore = sum / count;
+      }
+    }
+  };
+});
