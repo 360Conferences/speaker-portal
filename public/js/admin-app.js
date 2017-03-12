@@ -115,8 +115,31 @@ app.controller("ProfileItemCtrl", function($scope, Avatar) {
   };
 });
 
-/* Controller to list and manage session schedule */
-app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray, $mdDialog) {
+/* Controller to list and manage submission items */
+app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray, $mdDialog) {
+  $scope.sortOptions = [
+    {value: 'title', label: "Session Title"},
+    {value: 'name', label: "Speaker Name"},
+    {value: 'score', label: "Reviewer Score"}
+  ];
+  $scope.sortProperty = 'title';
+  $scope.reverseSort = false;
+  $scope.getSortParam = function(item) {
+    switch ($scope.sortProperty) {
+      case 'name':
+        $scope.reverseSort = false;
+        return $scope.profiles[item.speaker_id] ?
+                $scope.profiles[item.speaker_id].name : "";
+      case 'score':
+        $scope.reverseSort = true;
+        return $scope.scores[item.$id];
+      case 'title':
+      default:
+        $scope.reverseSort = false;
+        return item.title;
+    }
+  }
+
   // create an instance of the authentication service
   var auth = $firebaseAuth();
   auth.$onAuthStateChanged(function(firebaseUser) {
@@ -126,9 +149,33 @@ app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, 
     var submissionRef = firebase.database().ref(SUBMISSION_URL);
     var query = submissionRef.orderByChild("title");
 
+    // Fetch firebase data
     $scope.profiles = $firebaseObject(profileRef);
     $scope.submissions = $firebaseArray(query);
+    // Compute reviewer data
+    $scope.scores = {};
+    $scope.submissions.$loaded().then(function() {
+      angular.forEach($scope.submissions, function(submission) {
+        ComputeReviewScore(submission, $scope.scores);
+      })
+    });
   });
+
+  function ComputeReviewScore(item, scores) {
+    //Set the default value
+    scores[item.$id] = 0.0;
+    if (item.scores) {
+      var count = Object.keys(item.scores).length;
+      if (count > 0) {
+        var sum = 0.0;
+        for (var key in item.scores) {
+          sum += item.scores[key];
+        }
+
+        scores[item.$id] = sum / count;
+      }
+    }
+  }
 
   $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
     ShowEntryDialog(evt, submissionItem, profileItem);
@@ -164,25 +211,4 @@ app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseObject, 
       $mdDialog.hide();
     };
   }
-});
-
-app.controller("SubmissionItemCtrl", function($scope) {
-  // Only run on init/reload. Not currently data bound.
-  $scope.computeReviewScore = function(item) {
-    if ($scope.firebaseUser == null) return;
-
-    //Set the default value
-    $scope.avgScore = 0.0;
-    if (item.scores) {
-      var count = Object.keys(item.scores).length;
-      if (count > 0) {
-        var sum = 0.0;
-        for (var key in item.scores) {
-          sum += item.scores[key];
-        }
-
-        $scope.avgScore = sum / count;
-      }
-    }
-  };
 });

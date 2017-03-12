@@ -127,15 +127,26 @@
             <!-- Schedule Tab -->
             <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1"
                  md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                 ng-controller="ScheduleCtrl">
-              <h2>Submission Count: {{ submissions.length }}</h2>
-              <md-card md-theme="cardTheme" ng-repeat="item in submissions">
-                <md-content ng-controller="SubmissionItemCtrl" ng-init="computeReviewScore(item)">
+                 ng-controller="SubmissionCtrl">
+              <div layout="row">
+                <h2 flex>Submission Count: {{ submissions.length }}</h2>
+                <md-input-container class="md-block">
+                  <label>Sort By</label>
+                  <md-select ng-model="sortProperty">
+                    <md-option ng-repeat="option in sortOptions" ng-value="option.value">
+                      {{option.label}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+              </div>
+              <md-card md-theme="cardTheme"
+                       ng-repeat="item in submissions | orderBy:getSortParam:reverseSort">
+                <md-content>
                     <md-list-item class="md-2-line md-long-text"
                     layout="row" layout-align="center center"
                                  ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
                      <div class="score-container">
-                       <h2>{{avgScore | number:1}}</h2>
+                       <h2>{{scores[item.$id] | number:1}}</h2>
                      </div>
                      <div class="md-list-item-text" layout="column">
                        <h3>{{ item.title }}</h3>
