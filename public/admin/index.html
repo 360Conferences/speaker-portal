@@ -152,7 +152,11 @@
                        <h2>{{scores[item.$id] | number:1}}</h2>
                      </div>
                      <div class="md-list-item-text" layout="column" layout-padding>
-                       <h3 style="padding: 0px;">{{ item.title }}</h3>
+                       <div style="padding: 0px;" layout="row">
+                         <h3 flex>{{ item.title }}</h3>
+                         <md-icon ng-show="item.comments">comment</md-icon>
+                       </div>
+
                        <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
                        <p style="padding: 0px;">{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
                      </div>

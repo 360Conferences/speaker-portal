@@ -239,3 +239,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     };
   }
 });
+
+app.controller("SubmissionItemCtrl", function($scope) {
+  
+});
