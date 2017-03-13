@@ -1,0 +1,28 @@
+<md-dialog aria-label="Speaker Profile">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Speaker Profile</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content" layout="row">
+        <img id="speaker-image" ng-src="{{imageUrl}}"/>
+        <div layout="column">
+          <h3>{{ speaker.name }}</h3>
+          <h4 style="margin: 0px;">{{ speaker.company }}</h4>
+          <p style="margin: 0px;">{{ speaker.email }}</p>
+          <a style="margin: 0px;" ng-href="{{twitterUrl(speaker.twitter)}}"
+             target="_blank">{{ speaker.twitter }}</a>
+          <p style="white-space: pre-line;">{{ speaker.bio }}</p>
+        </div>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="close()">Close</md-button>
+    </md-dialog-actions>
+
+</md-dialog>

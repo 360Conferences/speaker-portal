@@ -17,11 +17,20 @@
 
 #speaker-image {
   border-radius: 100px;
+  min-width: 200px;
+  min-height: 200px;
+  width: 200px;
+  height: 200px;
+  margin-right: 16px;
 }
 #admin-toolbar {
   height: 96px;
   min-height: 96px;
   max-height: 96px;
+}
+.profile-image {
+  border-radius: 32px;
+  margin-right: 16px;
 }
 .score-container {
   min-width: 64px;

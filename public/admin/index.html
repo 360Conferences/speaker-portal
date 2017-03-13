@@ -53,7 +53,7 @@
         </md-menu>
       </div>
       <md-tabs ng-show="validAdminUser" md-selected="tabs.selectedIndex" md-stretch-tabs="always">
-        <md-tab id="tab1" aria-controls="tab1-content">Speakers</md-tab>
+        <md-tab id="tab1" aria-controls="tab1-content">Profiles</md-tab>
         <md-tab id="tab2" aria-controls="tab2-content">Submissions</md-tab>
       </md-tabs>
     </md-toolbar>
@@ -105,21 +105,24 @@
             <!-- Speaker Tab -->
             <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0"
                  md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                 ng-controller="SpeakerCtrl">
-              <h2>Profile Count: {{ profiles.length }}</h2>
-              <md-card md-theme="cardTheme" ng-repeat="item in profiles">
-                <md-content ng-controller="ProfileItemCtrl" layout-padding>
-                  <div layout="row" layout-align="center center">
-                    <img style="border-radius: 32px;" width="64px" height="64px" src="{{avatarUrl}}"
-                         ng-init="getAvatarUrl(item)" />
-                    <md-list-item class="md-2-line">
-                      <div class="md-list-item-text" layout="column">
-                        <h3>{{ item.name }}</h3>
-                        <p style="white-space: pre-line;">{{ item.company }}
-                          <a ng-href="{{twitterUrl(item.twitter)}}" target="_blank">{{ item.twitter }}</a></p>
-                      </div>
-                    </md-list-item>
-                  </div>
+                 ng-controller="ProfileCtrl">
+              <h2>Profile Count: {{ profilesList.length }}</h2>
+              <md-card md-theme="cardTheme" ng-repeat="item in profilesList">
+                <md-content ng-controller="ProfileItemCtrl">
+
+                  <md-list-item class="md-2-line"
+                                layout="row" layout-align="center center"
+                                ng-click="showProfileDetail($event,item,avatarUrl)">
+                    <div>
+                      <img class="profile-image" width="64px" height="64px"
+                           src="{{avatarUrl}}" ng-init="getAvatarUrl(item)" />
+                    </div>
+                    <div class="md-list-item-text" layout="column">
+                      <h3>{{ item.name }}</h3>
+                      <p style="white-space: pre-line;">{{ item.company }}</p>
+                    </div>
+                  </md-list-item>
+
                 </md-content>
               </md-card>
 
@@ -142,16 +145,16 @@
               <md-card md-theme="cardTheme"
                        ng-repeat="item in submissions | orderBy:getSortParam:reverseSort">
                 <md-content>
-                    <md-list-item class="md-2-line md-long-text"
-                    layout="row" layout-align="center center"
-                                 ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
+                    <md-list-item class="md-2-line"
+                                  layout="row" layout-align="center center"
+                                  ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
                      <div class="score-container">
                        <h2>{{scores[item.$id] | number:1}}</h2>
                      </div>
-                     <div class="md-list-item-text" layout="column">
-                       <h3>{{ item.title }}</h3>
-                       <h4>{{ profiles[item.speaker_id].name }}</h4>
-                       <p>{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
+                     <div class="md-list-item-text" layout="column" layout-padding>
+                       <h3 style="padding: 0px;">{{ item.title }}</h3>
+                       <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
+                       <p style="padding: 0px;">{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
                      </div>
                     </md-list-item>
                 </md-content>
