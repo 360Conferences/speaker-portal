@@ -111,7 +111,11 @@
                    ng-hide="item.speaker_id === firebaseUser.uid">
             <md-content layout-padding>
               <div layout="column">
-                <h3>{{ item.title }}</h3>
+                <div layout="row">
+                  <h3 flex>{{ item.title }}</h3>
+                  <md-icon class="review-done md-primary"
+                           ng-show="item.scores[firebaseUser.uid]">done</md-icon>
+                </div>
                 <p style="white-space: pre-line;">{{ item.abstract }}</p>
 
                 <md-input-container class="md-block" flex-gt-sm>
