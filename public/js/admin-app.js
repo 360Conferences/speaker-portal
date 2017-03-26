@@ -240,6 +240,16 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   }
 });
 
-app.controller("SubmissionItemCtrl", function($scope) {
-  
+/* Controller to manage talk schedule */
+app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseArray) {
+  // create an instance of the authentication service
+  var auth = $firebaseAuth();
+  auth.$onAuthStateChanged(function(firebaseUser) {
+    if (firebaseUser == null) return;
+
+    var ref = firebase.database().ref(SUBMISSION_URL);
+    var query = ref.orderByChild("accepted").equalTo(true);
+
+    $scope.sessions = $firebaseArray(query);
+  });
 });
