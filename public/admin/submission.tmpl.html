@@ -12,6 +12,10 @@
         <h3>{{ entry.title }}</h3>
         <h4>{{ speaker.name }}</h4>
         <p style="white-space: pre-line;">{{ entry.abstract }}</p>
+        <div ng-show="entry.notes">
+          <h4>Organizer Notes</h4>
+          <p style="white-space: pre-line;">{{ entry.notes }}</p>
+        </div>
         <div ng-show="entry.comments">
           <h4>Comments</h4>
           <ul>

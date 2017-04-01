@@ -13,12 +13,29 @@
           <label>Title</label>
           <input required name="entryTitle" ng-model="entry.title" />
         </md-input-container>
-
+        <p>
+          Enter an abstract description of your talk. This will be visible to
+          reviewers and publicly on the conference site if your talk is
+          selected.
+        </p>
         <md-input-container class="md-block" flex-gt-sm>
           <label>Abstract</label>
           <textarea required name="entryAbstract"
                     ng-model="entry.abstract"
-                    md-maxlength="1200" rows="10" md-select-on-focus>
+                    md-maxlength="1200" rows="6" md-select-on-focus>
+          </textarea>
+        </md-input-container>
+        <p>
+          Please enter any additional information you would like to provide the
+          organizers about you or your talk (links to previous talks, etc.),
+          including if you plan to have a co-presenter. This content will not
+          be shown publicly or to reviewers.
+        </p>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Additional Notes</label>
+          <textarea name="entryNotes"
+                    ng-model="entry.notes"
+                    md-maxlength="1200" rows="6" md-select-on-focus>
           </textarea>
         </md-input-container>
       </div>

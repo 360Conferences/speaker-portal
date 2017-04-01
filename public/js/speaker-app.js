@@ -252,7 +252,8 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray,
     var entry = {
       id: item.$id,
       title: item.title,
-      abstract: item.abstract
+      abstract: item.abstract,
+      notes: item.notes
     };
     ShowEntryDialog(evt, entry);
   }
@@ -324,6 +325,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray,
         function(data) {
           entryObject.title = entry.title;
           entryObject.abstract = entry.abstract;
+          entryObject.notes = entry.notes;
           entryObject.$save();
         },
         function(error) {
