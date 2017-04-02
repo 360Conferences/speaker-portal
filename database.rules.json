@@ -17,6 +17,10 @@
         ".read": "auth.uid != null",
         ".write": "auth.uid != null"
       },
+      "schedule": {
+        ".read": true,
+        ".write": "root.child('config/admins').hasChild(auth.uid)"
+      },
       "sessions": {
         ".read": true,
         ".write": false

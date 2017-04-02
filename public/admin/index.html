@@ -162,7 +162,7 @@
                  </div>
                  <!-- Admin control to mark a talk accepted -->
                  <md-switch ng-model="item.accepted"
-                            ng-change="submissions.$save(item)"/>
+                            ng-change="onTalkSelectionChanged(item)"/>
                 </md-list-item>
               </md-card>
 
@@ -181,7 +181,8 @@
                   <md-card md-theme="cardTheme"
                            ng-repeat="item in sessions">
                     <md-list-item class="md-2-line"
-                                  layout="row" layout-align="center center">
+                                  layout="row" layout-align="center center"
+                                  ng-click="updateScheduleItem($event,item,profiles[item.speaker_id])">
                      <div class="md-list-item-text" layout="column" layout-padding>
                        <h3 style="padding: 0px;" flex>{{ item.title }}</h3>
                        <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>

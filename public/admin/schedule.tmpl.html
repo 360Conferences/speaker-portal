@@ -1,0 +1,55 @@
+<md-dialog aria-label="Schedule Session">
+  <form name="sessionForm" ng-submit="save(session)">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Schedule Session</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+      <div class="md-dialog-content">
+        <h3>{{ entry.title }}</h3>
+        <h4>{{ speaker.name }}</h4>
+        <div layout="row">
+          <md-input-container class="md-block" flex>
+            <label>Time Slot</label>
+            <md-select required ng-model="session.start_time">
+              <md-option ng-repeat="option in timeOptions" ng-value="option.value">
+                {{ option.label }}
+              </md-option>
+            </md-select>
+          </md-input-container>
+        </div>
+
+        <div layout="row">
+          <md-input-container class="md-block" flex>
+            <label>Room</label>
+            <md-select required ng-model="session.room">
+              <md-option ng-repeat="option in roomOptions" ng-value="option.value">
+                {{option.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container class="md-block" flex>
+            <label>Attendee Level</label>
+            <md-select required ng-model="session.level">
+              <md-option ng-repeat="option in levelOptions" ng-value="option.value">
+                {{option.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+        </div>
+      </div>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="cancel()">Cancel</md-button>
+      <md-button type="submit">Save</md-button>
+    </md-dialog-actions>
+
+  </form>
+</md-dialog>

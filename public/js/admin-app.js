@@ -2,6 +2,7 @@
 var CONFIG_URL = "config";
 var PROFILE_URL = "2017/profiles";
 var SUBMISSION_URL = "2017/submissions";
+var SESSION_URL = "2017/schedule";
 var PLACEHOLDER_IMG = "/images/placeholder.png";
 
 var app = angular
@@ -31,6 +32,18 @@ app.factory("Config", ["$firebaseObject",
 
       // return it as a synchronized object
       return $firebaseObject(ref);
+    }
+  }
+]);
+
+// Retrieve a session schedule object
+app.factory("Session", ["$firebaseObject",
+  function($firebaseObject) {
+    return function(uid) {
+      var ref = firebase.database().ref(SESSION_URL);
+      var sessionRef = ref.child(uid);
+      // return it as a synchronized object
+      return $firebaseObject(sessionRef);
     }
   }
 ]);
@@ -66,11 +79,13 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $firebaseObject, $fir
     var profileQuery = profileRef.orderByChild("name");
     var submissionRef = firebase.database().ref(SUBMISSION_URL);
     var submissionQuery = submissionRef.orderByChild("title");
+    var sessionQuery = submissionRef.orderByChild("accepted").equalTo(true);
 
     // Fetch firebase data
     $scope.profiles = $firebaseObject(profileRef);
     $scope.profilesList = $firebaseArray(profileQuery)
     $scope.submissions = $firebaseArray(submissionQuery);
+    $scope.sessions = $firebaseArray(sessionQuery);
     // Compute reviewer data
     $scope.scores = {};
     $scope.submissions.$loaded().then(function() {
@@ -180,7 +195,7 @@ app.controller("ProfileItemCtrl", function($scope, Avatar) {
 });
 
 /* Controller to list and manage submission items */
-app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArray, $mdDialog) {
+app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArray, $mdDialog, Session) {
   $scope.sortOptions = [
     {value: 'title', label: "Session Title"},
     {value: 'name', label: "Speaker Name"},
@@ -202,6 +217,16 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
         $scope.reverseSort = false;
         return item.title;
     }
+  }
+
+  $scope.onTalkSelectionChanged = function(submissionItem) {
+    if (!submissionItem.accepted) {
+      // Delete any existing schedule information
+      var session = Session(submissionItem.$id);
+      session.$remove();
+    }
+    // Update the accepted state
+    $scope.submissions.$save(submissionItem);
   }
 
   $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
@@ -241,15 +266,112 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
 });
 
 /* Controller to manage talk schedule */
-app.controller("ScheduleCtrl", function($scope, $firebaseAuth, $firebaseArray) {
-  // create an instance of the authentication service
-  var auth = $firebaseAuth();
-  auth.$onAuthStateChanged(function(firebaseUser) {
-    if (firebaseUser == null) return;
+app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Config) {
 
-    var ref = firebase.database().ref(SUBMISSION_URL);
-    var query = ref.orderByChild("accepted").equalTo(true);
+  $scope.updateScheduleItem = function(evt, submissionItem, speakerProfile) {
+    var sessionInfo = Session(submissionItem.$id);
 
-    $scope.sessions = $firebaseArray(query);
-  });
+    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+  }
+
+  function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'schedule.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        config: $scope.config,
+        entry: submissionItem,
+        speaker: speakerProfile,
+        session: sessionInfo
+      }
+    })
+    .then(function(session){
+      // Session saved
+      sessionInfo.speaker_id = [submissionItem.speaker_id];
+      sessionInfo.submission_id = submissionItem.$id;
+      sessionInfo.event_type = 'session';
+      // Set the timestamps
+      var time = new Date(sessionInfo.start_time);
+      sessionInfo.start_time = time.toISOString();
+      time.setMinutes(time.getMinutes() + $scope.config.session_length);
+      sessionInfo.end_time = time.toISOString();
+
+      sessionInfo.$save().then(function() {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Schedule Updated')
+            .hideDelay(3000)
+        );
+      }).catch(function(error) {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Error updating schedule. Please try again later.')
+            .hideDelay(3000)
+        );
+      });
+    },function() {
+      // Dialog cancelled
+    });
+  }
+
+  // Handler for schedule dialog events
+  function DialogController($scope, $mdDialog, config, entry, speaker, session) {
+
+    // Common functions to map the option values to date strings in database
+    $scope.getTimeKey = function(dateString) {
+      var d = new Date(dateString);
+      return d.toISOString();
+    };
+    $scope.getTimeLabel = function(dateString) {
+      var d = new Date(dateString);
+      return d.toLocaleString();
+    }
+
+    $scope.timeOptions = [];
+    for (var i = 0; i < config.event_dates.length; i++) {
+      for (var j = 0; j < config.session_times.length; j++) {
+        var dateString = config.event_dates[i]+'T'+config.session_times[j];
+        var next = {value: $scope.getTimeKey(dateString), label: $scope.getTimeLabel(dateString)};
+        $scope.timeOptions.push(next);
+      }
+    }
+
+    $scope.roomOptions = [];
+    for (var key in config.venue_rooms) {
+      if (config.venue_rooms.hasOwnProperty(key)) {
+        var next = {value: key, label: config.venue_rooms[key]};
+        $scope.roomOptions.push(next);
+      }
+    }
+
+    $scope.levelOptions = [];
+    for (var key in config.session_levels) {
+      if (config.session_levels.hasOwnProperty(key)) {
+        var next = {value: key, label: config.session_levels[key]};
+        $scope.levelOptions.push(next);
+      }
+    }
+
+    $scope.entry = entry;
+    $scope.speaker = speaker;
+    $scope.session = session;
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+
+    $scope.save = function(session) {
+      if ($scope.sessionForm.$valid) {
+        $mdDialog.hide(session);
+      }
+    }
+  }
 });
