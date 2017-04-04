@@ -6,7 +6,7 @@ var SESSION_URL = "2017/schedule";
 var PLACEHOLDER_IMG = "/images/placeholder.png";
 
 var app = angular
-    .module("AnDevAdminApp", ["firebase", "ngMaterial", "ngMessages"])
+    .module("AnDevAdminApp", ["firebase", "ngMaterial", "ngMessages", "ngSanitize", "ngCsv"])
     .config(function($mdThemingProvider) {
       // Main content theme
       $mdThemingProvider.theme('default')
@@ -135,6 +135,22 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $firebaseObject, $fir
       $scope.firebaseUser = null;
       $scope.validAdminUser = false;
     });
+  };
+
+  // export button function
+  $scope.exportProfiles = function() {
+    var exportList = [];
+    for (var i = 0; i < $scope.profilesList.length; i++) {
+      var profile = $scope.profilesList[i];
+      exportList.push({
+        name: profile.name,
+        email: profile.email,
+        company: profile.company,
+        twitter: profile.twitter
+      });
+    }
+
+    return exportList;
   };
 });
 

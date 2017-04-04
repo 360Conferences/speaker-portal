@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- Angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-messages.min.js"></script>
@@ -16,6 +17,8 @@
     <!-- AngularFire -->
     <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
     <script src="/js/admin-app.js"></script>
+    <!-- ngCSV Export -->
+    <script src="/js/ng-csv.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
     <script>
@@ -46,6 +49,9 @@
               <p>{{firebaseUser.email}}</p>
             </md-menu-item>
             <md-menu-divider></md-menu-divider>
+            <md-menu-item>
+              <md-button ng-csv="exportProfiles()" filename="profiles.csv">Export Profiles</md-button>
+            </md-menu-item>
             <md-menu-item>
               <md-button ng-click="logoutUser()">Log Out</md-button>
             </md-menu-item>
