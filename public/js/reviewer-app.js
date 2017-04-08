@@ -86,7 +86,9 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
 
   // Logic to hide talks from reviewers
   $scope.shouldShowItem = function(item) {
+    // Review is closed or not logged in
     if ($scope.firebaseUser == null) return false;
+    if (!$scope.config.review_open) return false;
     
     // Speakers can't vote on their own talks
     if (item.speaker_id === $scope.firebaseUser.uid) {

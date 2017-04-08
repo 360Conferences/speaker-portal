@@ -247,6 +247,17 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray,
     }
   };
 
+  // Validate if the edit button should show
+  $scope.shouldEditItem = function(item) {
+    if ($scope.config.cfp_open) { // CFP is still open
+      return true;
+    } else if ($scope.config.review_open) { // Nothing is editable during review
+      return false;
+    } else { // Only editable if talk is accepted
+      return item.accepted;
+    }
+  }
+
   // Edit the selected item
   $scope.editSubmission = function(evt, item) {
     var entry = {

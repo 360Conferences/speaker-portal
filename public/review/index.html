@@ -88,7 +88,7 @@
               </div>
             </md-toolbar>
             <md-content layout-padding>
-              <p>
+              <p ng-show="config.review_open">
                 Please rate every session on a scale of 1-5; 1 being a session
                 you feel doesn't belong at {{config.event_name}} and 5 being a
                 session you would drop EVERYTHING to attend. You can optionally
@@ -103,6 +103,10 @@
                 We know there are a lot of submissions! Your work is saved
                 automatically, so feel free to take a break and come back later
                 to finish the reviews.
+              </p>
+              <p ng-hide="config.review_open">
+                Sessions for {{ config.event_name }} are not currently open for
+                review. Please check back again later.
               </p>
             </md-content>
           </md-card>

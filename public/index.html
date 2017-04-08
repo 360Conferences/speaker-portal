@@ -213,6 +213,7 @@
                       <p style="white-space: pre-line;">{{ item.abstract }}</p>
                     </div>
                     <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Edit"
+                               ng-show="shouldEditItem(item)"
                                ng-click="editSubmission($event,item)">
                       <md-icon>edit</md-icon>
                     </md-button>
@@ -223,9 +224,12 @@
                   </md-list-item>
                 </md-list>
                 <div ng-hide="submissions.length">
-                  <h3 align="center">
+                  <h3 ng-show="config.cfp_open" align="center">
                     Create your first talk submission using the Add button in
                     the toolbar.
+                  </h3>
+                  <h3 ng-hide="config.cfp_open" align="center">
+                    {{ config.event_name }} call for papers is no longer open.
                   </h3>
                 </div>
               </md-content>
