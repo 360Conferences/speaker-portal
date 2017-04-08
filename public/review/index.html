@@ -108,7 +108,7 @@
           </md-card>
 
           <md-card md-theme="cardTheme" ng-repeat="item in submissions"
-                   ng-hide="item.speaker_id === firebaseUser.uid">
+                   ng-show="shouldShowItem(item)">
             <md-content layout-padding>
               <div layout="column">
                 <div layout="row">

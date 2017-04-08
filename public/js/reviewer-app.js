@@ -83,4 +83,21 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
     var query = ref.orderByChild("title");
     $scope.submissions = $firebaseArray(query);
   });
+
+  // Logic to hide talks from reviewers
+  $scope.shouldShowItem = function(item) {
+    if ($scope.firebaseUser == null) return false;
+    
+    // Speakers can't vote on their own talks
+    if (item.speaker_id === $scope.firebaseUser.uid) {
+      return false;
+    }
+
+    // Accepted talks should not be shown
+    if (item.accepted) {
+      return false;
+    }
+
+    return true;
+  };
 });
