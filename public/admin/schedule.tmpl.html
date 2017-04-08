@@ -5,6 +5,10 @@
       <div class="md-toolbar-tools">
         <h2>Schedule Session</h2>
         <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="cancel()">
+          <md-icon>close</md-icon>
+        </md-button>
       </div>
     </md-toolbar>
 
@@ -47,7 +51,6 @@
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-click="cancel()">Cancel</md-button>
       <md-button type="submit">Save</md-button>
     </md-dialog-actions>
 

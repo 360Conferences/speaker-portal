@@ -4,6 +4,10 @@
       <div class="md-toolbar-tools">
         <h2>Talk Submission</h2>
         <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="close()">
+          <md-icon>close</md-icon>
+        </md-button>
       </div>
     </md-toolbar>
 
@@ -11,11 +15,14 @@
       <div class="md-dialog-content">
         <h3>{{ entry.title }}</h3>
         <h4>{{ speaker.name }}</h4>
-        <p style="white-space: pre-line;">{{ entry.abstract }}</p>
-        <div ng-show="entry.notes">
-          <h4>Organizer Notes</h4>
-          <p style="white-space: pre-line;">{{ entry.notes }}</p>
-        </div>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Abstract</label>
+          <textarea ng-model="entry.abstract"></textarea>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Organizer Notes</label>
+          <textarea ng-model="entry.notes"></textarea>
+        </md-input-container>
         <div ng-show="entry.comments">
           <h4>Comments</h4>
           <ul>
@@ -27,7 +34,7 @@
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-click="close()">Close</md-button>
+      <md-button ng-click="save(entry)">Save</md-button>
     </md-dialog-actions>
 
 </md-dialog>

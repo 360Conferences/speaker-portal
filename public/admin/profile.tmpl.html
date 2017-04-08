@@ -4,6 +4,10 @@
       <div class="md-toolbar-tools">
         <h2>Speaker Profile</h2>
         <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="close()">
+          <md-icon>close</md-icon>
+        </md-button>
       </div>
     </md-toolbar>
 
@@ -22,7 +26,6 @@
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-click="close()">Close</md-button>
     </md-dialog-actions>
 
 </md-dialog>

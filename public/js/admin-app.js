@@ -179,7 +179,7 @@ app.controller("ProfileCtrl", function($scope, $firebaseArray, $mdDialog) {
     });
   }
 
-  // Handler for entry dialog events
+  // Handler for profile dialog events
   function DialogController($scope, $mdDialog, speaker, imageUrl) {
     $scope.speaker = speaker;
     $scope.imageUrl = imageUrl;
@@ -211,7 +211,7 @@ app.controller("ProfileItemCtrl", function($scope, Avatar) {
 });
 
 /* Controller to list and manage submission items */
-app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArray, $mdDialog, Session) {
+app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArray, $mdDialog, $mdToast, Session) {
   $scope.sortOptions = [
     {value: 'title', label: "Session Title"},
     {value: 'name', label: "Speaker Name"},
@@ -262,7 +262,22 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
         speaker: profileItem
       }
     })
-    .then(function() {
+    .then(function(item) {
+      // Submission save
+      $scope.submissions.$save(item).then(function() {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Submission Updated')
+            .hideDelay(3000)
+        );
+      }).catch(function(error) {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Error updating submission. Please try again later.')
+            .hideDelay(3000)
+        );
+      });
+    },function() {
       // Dialog cancelled
     });
   }
@@ -276,8 +291,12 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     };
 
     $scope.close = function() {
-      $mdDialog.hide();
+      $mdDialog.cancel();
     };
+
+    $scope.save = function(item) {
+      $mdDialog.hide(item);
+    }
   }
 });
 
