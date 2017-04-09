@@ -122,7 +122,7 @@
             <md-content layout-padding>
               <div layout="column">
                 <div layout="row">
-                  <h3 flex>{{ item.title }}</h3>
+                  <h3 flex>{{ $index+1 }}. {{ item.title }}</h3>
                   <md-icon class="review-done md-primary"
                            ng-show="item.scores[firebaseUser.uid]">done</md-icon>
                 </div>
