@@ -111,7 +111,13 @@
             </md-content>
           </md-card>
 
-          <md-card md-theme="cardTheme" ng-repeat="item in submissions"
+          <!-- Show progress for slow data loading -->
+          <div layout="row" layout-sm="column" layout-align="space-around"
+               ng-hide="submissions.length">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+          </div>
+
+          <md-card md-theme="cardTheme" ng-repeat="item in submissions track by item.$id"
                    ng-show="shouldShowItem(item)">
             <md-content layout-padding>
               <div layout="column">
