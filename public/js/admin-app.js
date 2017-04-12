@@ -80,16 +80,23 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $firebaseObject, $fir
     var submissionRef = firebase.database().ref(SUBMISSION_URL);
     var submissionQuery = submissionRef.orderByChild("title");
     var sessionQuery = submissionRef.orderByChild("accepted").equalTo(true);
+    var scheduleRef = firebase.database().ref(SESSION_URL);
 
     // Fetch firebase data
+    // TODO: Determine a way to avoid duplicating these as arrays/objects
     $scope.profiles = $firebaseObject(profileRef);
-    $scope.profilesList = $firebaseArray(profileQuery)
-    $scope.submissions = $firebaseArray(submissionQuery);
+    $scope.profilesList = $firebaseArray(profileQuery);
+    $scope.submissions = $firebaseObject(submissionRef);
+    $scope.submissionsList = $firebaseArray(submissionQuery);
     $scope.sessions = $firebaseArray(sessionQuery);
+    $scope.schedule = $firebaseObject(scheduleRef);
+    $scope.scheduleList = $firebaseArray(scheduleRef);
+
     // Compute reviewer data
+    // TODO: Convert this conputation to run with a cloud function
     $scope.scores = {};
-    $scope.submissions.$loaded().then(function() {
-      angular.forEach($scope.submissions, function(submission) {
+    $scope.submissionsList.$loaded().then(function() {
+      angular.forEach($scope.submissionsList, function(submission) {
         ComputeReviewScore(submission, $scope.scores);
       })
     });
@@ -215,7 +222,8 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   $scope.sortOptions = [
     {value: 'title', label: "Session Title"},
     {value: 'name', label: "Speaker Name"},
-    {value: 'score', label: "Reviewer Score"}
+    {value: 'score', label: "Reviewer Score"},
+    {value: 'accepted', label: "Accepted Status"}
   ];
   $scope.sortProperty = 'title';
   $scope.reverseSort = false;
@@ -228,6 +236,13 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       case 'score':
         $scope.reverseSort = true;
         return $scope.scores[item.$id];
+      case 'accepted':
+        $scope.reverseSort = false;
+        if (item.accepted) {
+          return 0;
+        } else { // False and undefined are treated the same
+          return 1;
+        }
       case 'title':
       default:
         $scope.reverseSort = false;
@@ -242,7 +257,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       session.$remove();
     }
     // Update the accepted state
-    $scope.submissions.$save(submissionItem);
+    $scope.submissionsList.$save(submissionItem);
   }
 
   $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
@@ -264,7 +279,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     })
     .then(function(item) {
       // Submission save
-      $scope.submissions.$save(item).then(function() {
+      $scope.submissionsList.$save(item).then(function() {
         $mdToast.show(
           $mdToast.simple()
             .textContent('Submission Updated')
@@ -286,6 +301,11 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   function DialogController($scope, $mdDialog, entry, speaker) {
     $scope.entry = entry;
     $scope.speaker = speaker;
+
+    $scope.getScoreCount = function(scores) {
+      return Object.keys(scores).length;
+    };
+
     $scope.hide = function() {
       $mdDialog.hide();
     };
@@ -308,6 +328,10 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
 
     ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
   }
+
+  $scope.clearScheduleItem = function(scheduleItem) {
+    $scope.scheduleList.$remove(scheduleItem);
+  };
 
   function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
     $mdDialog.show({

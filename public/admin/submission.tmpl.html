@@ -13,8 +13,10 @@
 
     <md-dialog-content>
       <div class="md-dialog-content">
-        <h3>{{ entry.title }}</h3>
-        <h4>{{ speaker.name }}</h4>
+        <h4>Session Info</h4>
+        <md-input-container class="md-block" flex-gt-sm>
+          <textarea ng-model="entry.title"></textarea>
+        </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <label>Abstract</label>
           <textarea ng-model="entry.abstract"></textarea>
@@ -23,13 +25,20 @@
           <label>Organizer Notes</label>
           <textarea ng-model="entry.notes"></textarea>
         </md-input-container>
+
+        <div ng-show="entry.scores">
+          <h4>{{ getScoreCount(entry.scores) }} Votes</h4>
+          <div layout="row">
+            <p ng-repeat="score in entry.scores" layout-margin>{{ score }}</p>
+          </div>
+        </div>
+
         <div ng-show="entry.comments">
           <h4>Comments</h4>
           <ul>
             <li ng-repeat="comment in entry.comments">{{ comment }}</li>
           </ul>
         </div>
-
       </div>
     </md-dialog-content>
 

@@ -139,7 +139,8 @@
                  md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
                  ng-controller="SubmissionCtrl">
               <div layout="row">
-                <h2 flex>Submission Count: {{ submissions.length }}</h2>
+                <h2 flex>Submission Count: {{ submissionsList.length }}
+                  ({{ sessions.length }} accepted)</h2>
                 <md-input-container class="md-block">
                   <label>Sort By</label>
                   <md-select ng-model="sortProperty">
@@ -150,7 +151,7 @@
                 </md-input-container>
               </div>
               <md-card md-theme="cardTheme"
-                       ng-repeat="item in submissions | orderBy:getSortParam:reverseSort track by item.$id">
+                       ng-repeat="item in submissionsList | orderBy:getSortParam:reverseSort track by item.$id">
                 <md-list-item class="md-2-line"
                               layout="row" layout-align="center center"
                               ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
@@ -177,17 +178,41 @@
             <div role="tabpanel" id="tab3-content" aria-labelledby="tab3" ng-switch-when="2"
                  md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
                  ng-controller="ScheduleCtrl">
-              <h2 flex>Selected Talks: {{ sessions.length }}</h2>
-              <div layout="row">
+
+              <div layout="column">
                 <!-- Schedule view -->
-                <div flex="50">
+                <div layout="row" flex>
+                  <div ng-repeat="date in config.event_dates" layout="column" flex>
+                    <!-- List of talks, filtered and sorted by date -->
+                    <h2>{{ date }}</h2>
+                    <md-card md-theme="cardTheme"
+                             ng-repeat="item in scheduleList | filter: {start_time: date} | orderBy: 'start_time'">
+                      <md-list-item class="md-2-line"
+                                    layout="row" layout-align="center center">
+                       <div class="md-list-item-text" layout="column" layout-padding>
+                         <h3 style="padding: 0px;" flex>{{ submissions[item.submission_id].title }}</h3>
+                         <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
+                         <h4 style="padding: 0px;">
+                           {{ item.start_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
+                         </h4>
+                       </div>
+                       <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
+                                  ng-click="clearScheduleItem(item)">
+                         <md-icon>close</md-icon>
+                       </md-button>
+                      </md-list-item>
+                    </md-card>
+                  </div>
                 </div>
                 <!-- Selected talks list -->
-                <md-content flex="50">
+                <md-content>
+                  <h2>Unscheduled Talks</h2>
+                  <!-- List remaining talks without a schedule item -->
                   <md-card md-theme="cardTheme"
                            ng-repeat="item in sessions">
                     <md-list-item class="md-2-line"
                                   layout="row" layout-align="center center"
+                                  ng-hide="schedule[item.$id]"
                                   ng-click="updateScheduleItem($event,item,profiles[item.speaker_id])">
                      <div class="md-list-item-text" layout="column" layout-padding>
                        <h3 style="padding: 0px;" flex>{{ item.title }}</h3>
