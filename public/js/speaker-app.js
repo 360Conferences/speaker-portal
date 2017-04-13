@@ -1,11 +1,8 @@
-// Storage and Data Constants
-var CONFIG_URL = "config";
-var PROFILE_URL = "2017/profiles";
-var SUBMISSION_URL = "2017/submissions";
-var PLACEHOLDER_IMG = "/images/placeholder.png";
-
+/*
+ * Speaker app module
+ */
 var app = angular
-    .module("AnDevSpeakerApp", ["firebase", "ngMaterial", "ngMessages", "ngFileUpload", "ngImgCrop"])
+    .module("SpeakerApp", ["conference.model", "firebase", "ngMaterial", "ngMessages", "ngFileUpload", "ngImgCrop"])
     .config(function($mdThemingProvider) {
       // Main content theme
       $mdThemingProvider.theme('default')
@@ -22,57 +19,6 @@ var app = angular
           'default': '50'
         });
     });
-
-// Pass in a uid and get back their synchronized data
-app.factory("Profile", ["$firebaseObject",
-  function($firebaseObject) {
-    return function(uid) {
-      var ref = firebase.database().ref(PROFILE_URL);
-      var profileRef = ref.child(uid);
-
-      // return it as a synchronized object
-      return $firebaseObject(profileRef);
-    }
-  }
-]);
-
-// Retrieve the app config object
-app.factory("Config", ["$firebaseObject",
-  function($firebaseObject) {
-    return function() {
-      var ref = firebase.database().ref(CONFIG_URL);
-
-      // return it as a synchronized object
-      return $firebaseObject(ref);
-    }
-  }
-]);
-
-// Pass in a uid and get back their profile image
-app.factory("Avatar", ["$firebaseStorage",
-  function($firebaseStorage) {
-    return function(uid) {
-      var ref = firebase.storage().ref(PROFILE_URL);
-      var avatarRef = ref.child(uid);
-
-      // return it as a storage object
-      return $firebaseStorage(avatarRef);
-    }
-  }
-]);
-
-// Pass in an id and get back an entry ref
-app.factory("Submission", ["$firebaseObject",
-  function($firebaseObject) {
-    return function(id) {
-      var ref = firebase.database().ref(SUBMISSION_URL);
-      var entryRef = ref.child(id);
-
-      // return is as a synchronized object
-      return $firebaseObject(entryRef);
-    }
-  }
-]);
 
 /* Controller to manage user login */
 app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
@@ -117,7 +63,7 @@ app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToas
       $scope.avatarUrl = url;
     }).catch(function(error){
       // Load placeholder image
-      $scope.avatarUrl = PLACEHOLDER_IMG;
+      $scope.avatarUrl = "/images/placeholder.png";
     });
   });
 
@@ -218,16 +164,13 @@ app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToas
 });
 
 /* Controller to manage talk submissions */
-app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $firebaseArray, $mdDialog, $mdToast, Submission) {
+app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToast, Submission, UserSubmissions) {
   // create an instance of the authentication service
   var auth = $firebaseAuth();
   auth.$onAuthStateChanged(function(firebaseUser) {
     if (firebaseUser == null) return;
 
-    var ref = firebase.database().ref(SUBMISSION_URL);
-    var query = ref.orderByChild("speaker_id").equalTo(firebaseUser.uid);
-
-    $scope.submissions = $firebaseArray(query);
+    $scope.submissions = UserSubmissions(firebaseUser.uid);
   });
 
   // Add a new submission to the list

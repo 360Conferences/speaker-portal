@@ -1,10 +1,8 @@
-// Storage and Data Constants
-var CONFIG_URL = "config";
-var PROFILE_URL = "2017/profiles";
-var SUBMISSION_URL = "2017/submissions";
-
+/*
+ * Reviewer app module
+ */
 var app = angular
-    .module("AnDevReviewerApp", ["firebase", "ngMaterial", "ngMessages"])
+    .module("ReviewerApp", ["conference.model", "firebase", "ngMaterial", "ngMessages"])
     .config(function($mdThemingProvider) {
       // Main content theme
       $mdThemingProvider.theme('default')
@@ -21,18 +19,6 @@ var app = angular
           'default': '50'
         });
     });
-
-// Retrieve the app config object
-app.factory("Config", ["$firebaseObject",
-  function($firebaseObject) {
-    return function() {
-      var ref = firebase.database().ref(CONFIG_URL);
-
-      // return it as a synchronized object
-      return $firebaseObject(ref);
-    }
-  }
-]);
 
 /* Controller to manage user login */
 app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
@@ -64,7 +50,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config) {
 });
 
 /* Controller ot manage review items */
-app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
+app.controller("ReviewCtrl", function($scope, $firebaseAuth, SubmissionList) {
   $scope.scores = [
     {id: 1, label: "1 - Inappropriate"},
     {id: 2, label: "2 - I'd rather be in the hallway"},
@@ -79,9 +65,7 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
     if (firebaseUser == null) return;
 
     // set up data binding
-    var ref = firebase.database().ref(SUBMISSION_URL);
-    var query = ref.orderByChild("title");
-    $scope.submissions = $firebaseArray(query);
+    $scope.submissions = SubmissionList();
   });
 
   // Logic to hide talks from reviewers
@@ -89,7 +73,7 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, $firebaseArray) {
     // Review is closed or not logged in
     if ($scope.firebaseUser == null) return false;
     if (!$scope.config.review_open) return false;
-    
+
     // Speakers can't vote on their own talks
     if (item.speaker_id === $scope.firebaseUser.uid) {
       return false;

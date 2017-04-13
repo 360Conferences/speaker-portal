@@ -1,12 +1,8 @@
-// Storage and Data Constants
-var CONFIG_URL = "config";
-var PROFILE_URL = "2017/profiles";
-var SUBMISSION_URL = "2017/submissions";
-var SESSION_URL = "2017/schedule";
-var PLACEHOLDER_IMG = "/images/placeholder.png";
-
+/*
+ * Admin app module
+ */
 var app = angular
-    .module("AnDevAdminApp", ["firebase", "ngMaterial", "ngMessages", "ngSanitize", "ngCsv"])
+    .module("AdminApp", ["conference.model", "firebase", "ngMaterial", "ngMessages", "ngSanitize", "ngCsv"])
     .config(function($mdThemingProvider) {
       // Main content theme
       $mdThemingProvider.theme('default')
@@ -24,45 +20,8 @@ var app = angular
         });
     });
 
-// Retrieve the app config object
-app.factory("Config", ["$firebaseObject",
-  function($firebaseObject) {
-    return function() {
-      var ref = firebase.database().ref(CONFIG_URL);
-
-      // return it as a synchronized object
-      return $firebaseObject(ref);
-    }
-  }
-]);
-
-// Retrieve a session schedule object
-app.factory("Session", ["$firebaseObject",
-  function($firebaseObject) {
-    return function(uid) {
-      var ref = firebase.database().ref(SESSION_URL);
-      var sessionRef = ref.child(uid);
-      // return it as a synchronized object
-      return $firebaseObject(sessionRef);
-    }
-  }
-]);
-
-// Pass in a uid and get back their profile image
-app.factory("Avatar", ["$firebaseStorage",
-  function($firebaseStorage) {
-    return function(uid) {
-      var ref = firebase.storage().ref(PROFILE_URL);
-      var avatarRef = ref.child(uid);
-
-      // return it as a storage object
-      return $firebaseStorage(avatarRef);
-    }
-  }
-]);
-
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, $firebaseObject, $firebaseArray, Config) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
   $scope.validAdminUser = false;
@@ -75,22 +34,15 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $firebaseObject, $fir
   auth.$onAuthStateChanged(function(firebaseUser) {
     if (firebaseUser == null) return;
 
-    var profileRef = firebase.database().ref(PROFILE_URL);
-    var profileQuery = profileRef.orderByChild("name");
-    var submissionRef = firebase.database().ref(SUBMISSION_URL);
-    var submissionQuery = submissionRef.orderByChild("title");
-    var sessionQuery = submissionRef.orderByChild("accepted").equalTo(true);
-    var scheduleRef = firebase.database().ref(SESSION_URL);
-
     // Fetch firebase data
     // TODO: Determine a way to avoid duplicating these as arrays/objects
-    $scope.profiles = $firebaseObject(profileRef);
-    $scope.profilesList = $firebaseArray(profileQuery);
-    $scope.submissions = $firebaseObject(submissionRef);
-    $scope.submissionsList = $firebaseArray(submissionQuery);
-    $scope.sessions = $firebaseArray(sessionQuery);
-    $scope.schedule = $firebaseObject(scheduleRef);
-    $scope.scheduleList = $firebaseArray(scheduleRef);
+    $scope.profiles = Profile();
+    $scope.profilesList = ProfileList();
+    $scope.submissions = Submission();
+    $scope.submissionsList = SubmissionList();
+    $scope.sessions = AcceptedSubmissions();
+    $scope.schedule = Session();
+    $scope.scheduleList = SessionList();
 
     // Compute reviewer data
     // TODO: Convert this conputation to run with a cloud function
@@ -212,7 +164,7 @@ app.controller("ProfileItemCtrl", function($scope, Avatar) {
       $scope.avatarUrl = url;
     }).catch(function(error){
       // Load placeholder image
-      $scope.avatarUrl = PLACEHOLDER_IMG;
+      $scope.avatarUrl = "/images/placeholder.png";
     });
   };
 });
