@@ -161,7 +161,7 @@
                  </div>
                  <div class="md-list-item-text" layout="column" layout-padding>
                    <div style="padding: 0px;" layout="row">
-                     <h3 flex>{{ item.title }}</h3>
+                     <h3 flex><strong>{{ $index+1 }}.</strong> {{ item.title }}</h3>
                      <md-icon ng-show="item.comments">comment</md-icon>
                    </div>
 
