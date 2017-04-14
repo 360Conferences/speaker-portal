@@ -285,6 +285,17 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     $scope.scheduleList.$remove(scheduleItem);
   };
 
+  $scope.isSpeakerUnique = function(scheduleItem) {
+    var count = 0;
+    for (session of $scope.sessions) {
+      if (session.speaker_id === scheduleItem.speaker_id) {
+        count++;
+      }
+    }
+
+    return count < 2;
+  }
+
   function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
     $mdDialog.show({
       controller: DialogController,

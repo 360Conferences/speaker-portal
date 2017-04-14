@@ -219,6 +219,8 @@
                        <h3 style="padding: 0px;" flex>{{ item.title }}</h3>
                        <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
                      </div>
+                     <md-icon class="md-primary"
+                              ng-hide="isSpeakerUnique(item)">people_outline</md-icon>
                     </md-list-item>
                   </md-card>
                 </md-content>
