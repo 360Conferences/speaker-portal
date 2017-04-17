@@ -21,7 +21,7 @@ var app = angular
     });
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
   $scope.validAdminUser = false;
@@ -52,6 +52,14 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, Prof
         ComputeReviewScore(submission, $scope.scores);
       })
     });
+
+    // Cache avatar URLs
+    $scope.avatarUrls = {};
+    $scope.profiles.$loaded().then(function() {
+      angular.forEach($scope.profilesList, function(profile) {
+        GetAvatarUrl(profile, $scope.avatarUrls);
+      })
+    });
   });
 
   function ComputeReviewScore(item, scores) {
@@ -68,6 +76,14 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, Prof
         scores[item.$id] = sum / count;
       }
     }
+  }
+
+  function GetAvatarUrl(profile, urls) {
+    Avatar(profile.$id).$getDownloadURL().then(function(url) {
+      urls[profile.$id] = url;
+    }).catch(function(error){
+      urls[profile.$id] = "/images/placeholder.png";
+    });
   }
 
   // login button function
@@ -96,7 +112,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, Prof
     });
   };
 
-  // export button function
+  // export button functions
   $scope.exportProfiles = function() {
     var exportList = [];
     for (var i = 0; i < $scope.profilesList.length; i++) {
@@ -106,6 +122,26 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Profile, Prof
         email: profile.email,
         company: profile.company,
         twitter: profile.twitter
+      });
+    }
+
+    return exportList;
+  };
+
+  $scope.exportSchedule = function() {
+    var exportList = [];
+    for (var i = 0; i < $scope.sessions.length; i++) {
+      var session = $scope.sessions[i];
+      var speaker = $scope.profiles[session.speaker_id];
+      var schedule = $scope.schedule[session.$id];
+      exportList.push({
+        name: speaker.name,
+        email: speaker.email,
+        image: $scope.avatarUrls[session.speaker_id],
+        title: session.title,
+        abstract: session.abstract,
+        time: schedule ? schedule.start_time : "n/a",
+        room: schedule ? schedule.room : "n/a"
       });
     }
 
@@ -154,19 +190,6 @@ app.controller("ProfileCtrl", function($scope, $firebaseArray, $mdDialog) {
       $mdDialog.hide();
     };
   }
-});
-
-app.controller("ProfileItemCtrl", function($scope, Avatar) {
-  $scope.getAvatarUrl = function(item) {
-    if ($scope.firebaseUser == null) return;
-
-    Avatar(item.$id).$getDownloadURL().then(function(url) {
-      $scope.avatarUrl = url;
-    }).catch(function(error){
-      // Load placeholder image
-      $scope.avatarUrl = "/images/placeholder.png";
-    });
-  };
 });
 
 /* Controller to list and manage submission items */

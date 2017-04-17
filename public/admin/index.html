@@ -54,6 +54,9 @@
               <md-button ng-csv="exportProfiles()" filename="profiles.csv">Export Profiles</md-button>
             </md-menu-item>
             <md-menu-item>
+              <md-button ng-csv="exportSchedule()" filename="schedule.csv">Export Schedule</md-button>
+            </md-menu-item>
+            <md-menu-item>
               <md-button ng-click="logoutUser()">Log Out</md-button>
             </md-menu-item>
           </md-menu-content>
@@ -116,14 +119,14 @@
                  ng-controller="ProfileCtrl">
               <h2>Profile Count: {{ profilesList.length }}</h2>
               <md-card md-theme="cardTheme" ng-repeat="item in profilesList track by item.$id">
-                <md-content ng-controller="ProfileItemCtrl">
+                <md-content>
 
                   <md-list-item class="md-2-line"
                                 layout="row" layout-align="center center"
-                                ng-click="showProfileDetail($event,item,avatarUrl)">
+                                ng-click="showProfileDetail($event,item,avatarUrls[item.$id])">
                     <div>
-                      <img class="profile-image" width="64px" height="64px"
-                           src="{{avatarUrl}}" ng-init="getAvatarUrl(item)" />
+                       <img class="profile-image" width="64px" height="64px"
+                            ng-src="{{ avatarUrls[item.$id] }}" />
                     </div>
                     <div class="md-list-item-text" layout="column">
                       <h3>{{ item.name }}</h3>
