@@ -118,7 +118,14 @@
                  md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
                  ng-controller="ProfileCtrl">
               <h2>Profile Count: {{ profilesList.length }}</h2>
-              <md-card md-theme="cardTheme" ng-repeat="item in profilesList track by item.$id">
+
+              <md-input-container md-no-float class="md-block">
+                 <md-icon class="material-icons">&#xE8B6;</md-icon>
+                 <input ng-model="profileFilterText" placeholder="Filter List">
+              </md-input-container>
+
+              <md-card md-theme="cardTheme"
+                       ng-repeat="item in profilesList | filter:profileFilter track by item.$id">
                 <md-content>
 
                   <md-list-item class="md-2-line"
@@ -154,8 +161,14 @@
                   </md-select>
                 </md-input-container>
               </div>
+
+              <md-input-container md-no-float class="md-block">
+                 <md-icon class="material-icons">&#xE8B6;</md-icon>
+                 <input ng-model="subFilterText" placeholder="Filter List">
+              </md-input-container>
+
               <md-card md-theme="cardTheme"
-                       ng-repeat="item in submissionsList | orderBy:getSortParam:reverseSort track by item.$id">
+                       ng-repeat="item in submissionsList | orderBy:getSortParam:reverseSort | filter:submissionFilter track by item.$id">
                 <md-list-item class="md-2-line"
                               layout="row" layout-align="center center"
                               ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">

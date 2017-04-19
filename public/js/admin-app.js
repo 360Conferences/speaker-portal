@@ -152,6 +152,13 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Avatar, Profi
 /* Controller to list and manage speaker profiles */
 app.controller("ProfileCtrl", function($scope, $firebaseArray, $mdDialog) {
 
+  $scope.profileFilter = function(item) {
+    var re = new RegExp($scope.profileFilterText, 'i');
+    return !$scope.profileFilterText
+            || re.test(item.name)
+            || re.test(item.company);
+  }
+
   $scope.showProfileDetail = function(evt, profileItem, avatarUrl) {
     ShowProfileDialog(evt, profileItem, avatarUrl);
   }
@@ -194,6 +201,14 @@ app.controller("ProfileCtrl", function($scope, $firebaseArray, $mdDialog) {
 
 /* Controller to list and manage submission items */
 app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArray, $mdDialog, $mdToast, Session) {
+
+  $scope.submissionFilter = function(item) {
+    var re = new RegExp($scope.subFilterText, 'i');
+    return !$scope.subFilterText
+            || re.test(item.title)
+            || re.test(item.abstract);
+  }
+
   $scope.sortOptions = [
     {value: 'title', label: "Session Title"},
     {value: 'name', label: "Speaker Name"},
