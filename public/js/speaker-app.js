@@ -190,14 +190,14 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
     }
   };
 
-  // Validate if the edit button should show
+  // Edit Rule: Not editable during the review period
   $scope.shouldEditItem = function(item) {
     if ($scope.config.cfp_open) { // CFP is still open
       return true;
     } else if ($scope.config.review_open) { // Nothing is editable during review
       return false;
-    } else { // Only editable if talk is accepted
-      return item.accepted;
+    } else { // All other times, edit is allowed
+      return true;
     }
   }
 

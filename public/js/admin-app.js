@@ -45,7 +45,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Avatar, Profi
     $scope.scheduleList = SessionList();
 
     // Compute reviewer data
-    // TODO: Convert this conputation to run with a cloud function
+    // TODO: Convert this computation to run with a cloud function
     $scope.scores = {};
     $scope.submissionsList.$loaded().then(function() {
       angular.forEach($scope.submissionsList, function(submission) {
@@ -137,6 +137,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Avatar, Profi
       exportList.push({
         name: speaker.name,
         email: speaker.email,
+        twitter: speaker.twitter,
         image: $scope.avatarUrls[session.speaker_id],
         title: session.title,
         abstract: session.abstract,
@@ -205,6 +206,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   $scope.submissionFilter = function(item) {
     var re = new RegExp($scope.subFilterText, 'i');
     return !$scope.subFilterText
+            || re.test($scope.profiles[item.speaker_id].name)
             || re.test(item.title)
             || re.test(item.abstract);
   }
