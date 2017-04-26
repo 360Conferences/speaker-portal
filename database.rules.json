@@ -2,7 +2,7 @@
   "rules": {
     "config": {
       ".read": true,
-      ".write": false
+      ".write": "root.child('config/admins').hasChild(auth.uid)"
     },
     "$year": {
       "profiles": {

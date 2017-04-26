@@ -1,0 +1,34 @@
+<md-dialog aria-label="Event Config">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Event Config</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="close()">
+          <md-icon>close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content" layout="column">
+        <div layout="row">
+          <p flex>Call For Papers Open</p>
+          <md-switch class="md-secondary" aria-label="Review Enable"
+                     ng-model="config.cfp_open"
+                     ng-change="onConfigItemChanged()"></md-switch>
+        </div>
+        <div layout="row">
+          <p flex>Session Reviews Open</p>
+          <md-switch class="md-secondary" aria-label="Review Enable"
+                     ng-model="config.review_open"
+                     ng-change="onConfigItemChanged()"></md-switch>
+        </div>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+    </md-dialog-actions>
+
+</md-dialog>

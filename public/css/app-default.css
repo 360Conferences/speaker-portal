@@ -23,10 +23,12 @@
   height: 200px;
   margin-right: 16px;
 }
-#admin-toolbar {
-  height: 96px;
-  min-height: 96px;
-  max-height: 96px;
+.sidenav-banner {
+  height: 240px;
+}
+.sidenav-logo {
+  max-width: 240px;
+  margin: auto;
 }
 .profile-image {
   border-radius: 32px;

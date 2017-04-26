@@ -21,13 +21,61 @@ var app = angular
     });
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, Config, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, Config, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
   $scope.validAdminUser = false;
-  // Set the default selected tab
-  $scope.tabs = {};
-  $scope.tabs.selectedIndex = 0;
+
+  // Set the navigation selections
+  $scope.toggleSidenav = function() {
+    $mdSidenav('left').toggle();
+  }
+  $scope.closeSidenav = function () {
+      $mdSidenav('left').close();
+  }
+  $scope.showView = function(item) {
+    $scope.selectedPanel = item;
+    $mdSidenav('left').close();
+  }
+  $scope.selectedPanel = 'speakers';
+
+  $scope.showEventConfig = function(evt) {
+    ShowConfigDialog(evt, $scope.config);
+    $mdSidenav('left').close();
+  }
+
+  function ShowConfigDialog(evt, config) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'config.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        localConfig: config
+      }
+    })
+    .then(function() {
+      // Dialog cancelled
+    });
+  }
+
+  // Handler for config dialog events
+  function DialogController($scope, $mdDialog, localConfig) {
+    $scope.config = localConfig;
+    $scope.onConfigItemChanged = function() {
+      $scope.config.$save();
+    }
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.close = function() {
+      $mdDialog.hide();
+    };
+  }
 
   // create an instance of the authentication service
   var auth = $firebaseAuth();

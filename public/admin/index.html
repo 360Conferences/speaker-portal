@@ -36,8 +36,32 @@
   </head>
 
   <body class="site-content-body" ng-controller="AuthCtrl" ng-cloak layout="column">
-    <md-toolbar id="admin-toolbar" class="site-content-toolbar">
+    <md-sidenav md-component-id="left" class="md-sidenav-left">
+      <md-toolbar class="sidenav-banner">
+        <div class="md-toolbar-tools">
+          <md-button class="md-icon-button" aria-label="Close Nav Drawer"
+                     ng-click="closeSidenav()">
+            <md-icon>close</md-icon>
+          </md-button>
+        </div>
+        <img class="sidenav-logo" src="/images/logo-banner.png" />
+      </md-toolbar>
+      <md-list>
+        <md-list-item ng-click="showView('speakers')">Speakers</md-list-item>
+        <md-list-item ng-click="showView('submissions')">Submissions</md-list-item>
+        <md-list-item ng-click="showView('schedule')">Schedule</md-list-item>
+        <md-divider></md-divider>
+        <md-list-item ng-click="showEventConfig($event)">Event Config</md-list-item>
+      </md-list>
+    </md-sidenav>
+
+    <md-toolbar class="site-content-toolbar">
       <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="Toggle Nav Drawer"
+                   ng-click="toggleSidenav()"
+                   ng-show="validAdminUser">
+          <md-icon>menu</md-icon>
+        </md-button>
         <h2 flex md-truncate>{{config.event_name}} {{config.event_year}} Admin</h2>
         <md-menu>
           <md-button class="md-icon-button" aria-label="More"
@@ -62,11 +86,6 @@
           </md-menu-content>
         </md-menu>
       </div>
-      <md-tabs ng-show="validAdminUser" md-selected="tabs.selectedIndex" md-stretch-tabs="always">
-        <md-tab id="tab1" aria-controls="tab1-content">Profiles</md-tab>
-        <md-tab id="tab2" aria-controls="tab2-content">Submissions</md-tab>
-        <md-tab id="tab3" aria-controls="tab3-content">Schedule</md-tab>
-      </md-tabs>
     </md-toolbar>
 
     <md-content layout-padding flex>
@@ -112,11 +131,9 @@
 
         <!-- Real Content View -->
         <div ng-show="validAdminUser">
-          <ng-switch on="tabs.selectedIndex" class="tabpanel-container">
-            <!-- Speaker Tab -->
-            <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0"
-                 md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                 ng-controller="ProfileCtrl">
+          <ng-switch on="selectedPanel" class="tabpanel-container">
+            <!-- Speaker View -->
+            <div ng-switch-when="speakers" ng-controller="ProfileCtrl">
               <h2>Profile Count: {{ profilesList.length }}</h2>
 
               <md-input-container md-no-float class="md-block">
@@ -145,10 +162,8 @@
               </md-card>
 
             </div>
-            <!-- Submission Tab -->
-            <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1"
-                 md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                 ng-controller="SubmissionCtrl">
+            <!-- Submission View -->
+            <div ng-switch-when="submissions" ng-controller="SubmissionCtrl">
               <div layout="row">
                 <h2 flex>Submission Count: {{ submissionsList.length }}
                   ({{ sessions.length }} accepted)</h2>
@@ -191,10 +206,8 @@
               </md-card>
 
             </div>
-            <!-- Schedule Tab -->
-            <div role="tabpanel" id="tab3-content" aria-labelledby="tab3" ng-switch-when="2"
-                 md-swipe-left="tabs.next()" md-swipe-right="tabs.previous()"
-                 ng-controller="ScheduleCtrl">
+            <!-- Schedule View -->
+            <div ng-switch-when="schedule" ng-controller="ScheduleCtrl">
 
               <div layout="column">
                 <!-- Schedule view -->
