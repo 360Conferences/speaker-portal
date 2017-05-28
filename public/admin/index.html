@@ -134,7 +134,7 @@
           <ng-switch on="selectedPanel" class="tabpanel-container">
             <!-- Speaker View -->
             <div ng-switch-when="speakers" ng-controller="ProfileCtrl">
-              <h2>Profile Count: {{ profilesList.length }}</h2>
+              <h2>Profile Count: {{ profiles.length }}</h2>
 
               <md-input-container md-no-float class="md-block">
                  <md-icon class="material-icons">&#xE8B6;</md-icon>
@@ -142,7 +142,7 @@
               </md-input-container>
 
               <md-card md-theme="cardTheme"
-                       ng-repeat="item in profilesList | filter:profileFilter track by item.$id">
+                       ng-repeat="item in profiles | filter:profileFilter track by item.$id">
                 <md-content>
 
                   <md-list-item class="md-2-line"
@@ -165,7 +165,7 @@
             <!-- Submission View -->
             <div ng-switch-when="submissions" ng-controller="SubmissionCtrl">
               <div layout="row">
-                <h2 flex>Submission Count: {{ submissionsList.length }}
+                <h2 flex>Submission Count: {{ submissions.length }}
                   ({{ sessions.length }} accepted)</h2>
                 <md-input-container class="md-block">
                   <label>Sort By</label>
@@ -183,10 +183,10 @@
               </md-input-container>
 
               <md-card md-theme="cardTheme"
-                       ng-repeat="item in submissionsList | orderBy:getSortParam:reverseSort | filter:submissionFilter track by item.$id">
+                       ng-repeat="item in submissions | orderBy:getSortParam:reverseSort | filter:submissionFilter track by item.$id">
                 <md-list-item class="md-2-line"
                               layout="row" layout-align="center center"
-                              ng-click="showSubmissionDetail($event,item,profiles[item.speaker_id])">
+                              ng-click="showSubmissionDetail($event,item,profiles.$getRecord(item.speaker_id))">
                  <div class="score-container">
                    <h2>{{scores[item.$id] | number:1}}</h2>
                  </div>
@@ -196,7 +196,7 @@
                      <md-icon ng-show="item.comments">comment</md-icon>
                    </div>
 
-                   <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
+                   <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
                    <p style="padding: 0px;">{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
                  </div>
                  <!-- Admin control to mark a talk accepted -->
@@ -211,29 +211,37 @@
 
               <div layout="column">
                 <!-- Schedule view -->
-                <div layout="row" flex>
-                  <div ng-repeat="date in config.event_dates" layout="column" flex>
-                    <!-- List of talks, filtered and sorted by date -->
-                    <h2>{{ date }}</h2>
-                    <md-card md-theme="cardTheme"
-                             ng-repeat="item in scheduleList | filter: {start_time: date} | orderBy: 'start_time'">
-                      <md-list-item class="md-2-line"
-                                    layout="row" layout-align="center center">
-                       <div class="md-list-item-text" layout="column" layout-padding>
-                         <h3 style="padding: 0px;" flex>{{ submissions[item.submission_id].title }}</h3>
-                         <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
-                         <h4 style="padding: 0px;">
-                           {{ item.start_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
-                         </h4>
-                       </div>
-                       <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
-                                  ng-click="clearScheduleItem(item)">
-                         <md-icon>close</md-icon>
-                       </md-button>
-                      </md-list-item>
-                    </md-card>
-                  </div>
-                </div>
+                <md-tabs md-border-bottom md-autoselect md-dynamic-height>
+                  <md-tab ng-repeat="date in config.event_dates"
+                          label="{{ date }}">
+                      <!-- List of events, filtered and sorted by date -->
+                      <div layout="row"
+                            ng-repeat="slot in timeSlots | filter: date | orderBy: 'toString()'">
+                        <h3>{{ slot | date:'hh:mm:ss a' }}</h3>
+
+                        <md-card md-theme="cardTheme"
+                                 ng-repeat="item in scheduleMap[slot] | orderBy: 'room'" flex>
+                          <md-list-item class="md-2-line"
+                                        layout="row" layout-align="center center">
+                           <div class="md-list-item-text" layout="column" layout-padding>
+                             <h3 style="padding: 0px;" flex>{{ submissions.$getRecord(item.submission_id).title }}</h3>
+                             <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
+                             <h4 style="padding: 0px;">
+                               {{ item.start_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
+                             </h4>
+                           </div>
+                           <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
+                                      ng-click="clearScheduleItem(item)">
+                             <md-icon>close</md-icon>
+                           </md-button>
+                          </md-list-item>
+                        </md-card>
+
+                      </div>
+
+                  </md-tab>
+                </md-tabs>
+
                 <!-- Selected talks list -->
                 <md-content>
                   <h2>Unscheduled Talks</h2>
@@ -242,11 +250,11 @@
                            ng-repeat="item in sessions">
                     <md-list-item class="md-2-line"
                                   layout="row" layout-align="center center"
-                                  ng-hide="schedule[item.$id]"
-                                  ng-click="updateScheduleItem($event,item,profiles[item.speaker_id])">
+                                  ng-hide="schedule.$getRecord(item.$id)"
+                                  ng-click="updateScheduleItem($event,item,profiles.$getRecord(item.speaker_id))">
                      <div class="md-list-item-text" layout="column" layout-padding>
                        <h3 style="padding: 0px;" flex>{{ item.title }}</h3>
-                       <h4 style="padding: 0px;">{{ profiles[item.speaker_id].name }}</h4>
+                       <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
                      </div>
                      <md-icon class="md-primary"
                               ng-hide="isSpeakerUnique(item)">people_outline</md-icon>

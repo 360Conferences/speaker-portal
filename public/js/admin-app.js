@@ -83,20 +83,33 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     if (firebaseUser == null) return;
 
     // Fetch firebase data
-    // TODO: Determine a way to avoid duplicating these as arrays/objects
-    $scope.profiles = Profile();
-    $scope.profilesList = ProfileList();
-    $scope.submissions = Submission();
-    $scope.submissionsList = SubmissionList();
+    $scope.profiles = ProfileList();
+    $scope.submissions = SubmissionList();
     $scope.sessions = AcceptedSubmissions();
-    $scope.schedule = Session();
-    $scope.scheduleList = SessionList();
+    $scope.schedule = SessionList();
+
+    // Schedule mapped by start time for UI
+    $scope.scheduleMap = {};
+    $scope.timeSlots = [];
+    $scope.schedule.$watch(function() {
+      $scope.scheduleMap = {};
+      $scope.timeSlots = [];
+      angular.forEach($scope.schedule, function(item) {
+        // Check if key exists first
+        if (!(item.start_time in $scope.scheduleMap)) {
+          $scope.scheduleMap[item.start_time] = [];
+          $scope.timeSlots.push(item.start_time);
+        }
+
+        $scope.scheduleMap[item.start_time].push(item);
+      })
+    });
 
     // Compute reviewer data
     // TODO: Convert this computation to run with a cloud function
     $scope.scores = {};
-    $scope.submissionsList.$loaded().then(function() {
-      angular.forEach($scope.submissionsList, function(submission) {
+    $scope.submissions.$loaded().then(function() {
+      angular.forEach($scope.submissions, function(submission) {
         ComputeReviewScore(submission, $scope.scores);
       })
     });
@@ -104,7 +117,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     // Cache avatar URLs
     $scope.avatarUrls = {};
     $scope.profiles.$loaded().then(function() {
-      angular.forEach($scope.profilesList, function(profile) {
+      angular.forEach($scope.profiles, function(profile) {
         GetAvatarUrl(profile, $scope.avatarUrls);
       })
     });
@@ -163,8 +176,8 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
   // export button functions
   $scope.exportProfiles = function() {
     var exportList = [];
-    for (var i = 0; i < $scope.profilesList.length; i++) {
-      var profile = $scope.profilesList[i];
+    for (var i = 0; i < $scope.profiles.length; i++) {
+      var profile = $scope.profiles[i];
       exportList.push({
         name: profile.name,
         email: profile.email,
@@ -180,8 +193,8 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     var exportList = [];
     for (var i = 0; i < $scope.sessions.length; i++) {
       var session = $scope.sessions[i];
-      var speaker = $scope.profiles[session.speaker_id];
-      var schedule = $scope.schedule[session.$id];
+      var speaker = $scope.profiles.$getRecord(session.speaker_id);
+      var schedule = $scope.schedule.$getRecord(session.$id);
       exportList.push({
         name: speaker.name,
         email: speaker.email,
@@ -254,7 +267,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   $scope.submissionFilter = function(item) {
     var re = new RegExp($scope.subFilterText, 'i');
     return !$scope.subFilterText
-            || re.test($scope.profiles[item.speaker_id].name)
+            || re.test($scope.profiles.$getRecord(item.speaker_id).name)
             || re.test(item.title)
             || re.test(item.abstract);
   }
@@ -271,8 +284,8 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     switch ($scope.sortProperty) {
       case 'name':
         $scope.reverseSort = false;
-        return $scope.profiles[item.speaker_id] ?
-                $scope.profiles[item.speaker_id].name : "";
+        return $scope.profiles.$getRecord(item.speaker_id) ?
+                $scope.profiles.$getRecord(item.speaker_id).name : "";
       case 'score':
         $scope.reverseSort = true;
         return $scope.scores[item.$id];
@@ -297,7 +310,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       session.$remove();
     }
     // Update the accepted state
-    $scope.submissionsList.$save(submissionItem);
+    $scope.submissions.$save(submissionItem);
   }
 
   $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
@@ -319,7 +332,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     })
     .then(function(item) {
       // Submission save
-      $scope.submissionsList.$save(item).then(function() {
+      $scope.submissions.$save(item).then(function() {
         $mdToast.show(
           $mdToast.simple()
             .textContent('Submission Updated')
@@ -363,6 +376,12 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
 /* Controller to manage talk schedule */
 app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Config) {
 
+  //Clean labels for each time slot
+  $scope.getSlotLabel = function(dateString) {
+    var d = new Date(dateString);
+    return d.toLocaleTimeString();
+  }
+
   $scope.updateScheduleItem = function(evt, submissionItem, speakerProfile) {
     var sessionInfo = Session(submissionItem.$id);
 
@@ -370,7 +389,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   }
 
   $scope.clearScheduleItem = function(scheduleItem) {
-    $scope.scheduleList.$remove(scheduleItem);
+    $scope.schedule.$remove(scheduleItem);
   };
 
   $scope.isSpeakerUnique = function(scheduleItem) {
