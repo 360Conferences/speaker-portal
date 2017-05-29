@@ -382,16 +382,47 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return d.toLocaleTimeString();
   }
 
-  $scope.updateScheduleItem = function(evt, submissionItem, speakerProfile) {
-    var sessionInfo = Session(submissionItem.$id);
+  //Count of accepted, but unscheduled sessions
+  $scope.unscheduledCount = Math.max(0,
+    $scope.sessions.length - $scope.schedule.length);
+  $scope.schedule.$watch(function() {
+    $scope.unscheduledCount = Math.max(0,
+      $scope.sessions.length - $scope.schedule.length);
+  });
 
-    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+  //Show toast with scheduling status
+  $scope.showScheduleStatus = function() {
+    var message = "";
+    switch ($scope.unscheduledCount) {
+      case 0:
+        message = "Schedule is complete!"
+        break;
+      case 1:
+        message = $scope.unscheduledCount+" talk left to schedule.";
+        break;
+      default:
+        message = $scope.unscheduledCount+" talks left to schedule.";
+        break;
+    }
+
+    $mdToast.show(
+      $mdToast.simple()
+        .textContent(message)
+        .hideDelay(3000)
+    );
   }
 
-  $scope.clearScheduleItem = function(scheduleItem) {
-    $scope.schedule.$remove(scheduleItem);
-  };
+  //Collect speakers into single label
+  $scope.getSpeakersLabel = function(scheduleItem) {
+    var names = [];
+    angular.forEach(scheduleItem.speaker_id, function(id) {
+      names.push($scope.profiles.$getRecord(id).name);
+    })
 
+    return names.join(", ");
+  }
+
+  //Verify is multiple talks accepted by same speaker
   $scope.isSpeakerUnique = function(scheduleItem) {
     var count = 0;
     for (session of $scope.sessions) {
@@ -402,6 +433,16 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
 
     return count < 2;
   }
+
+  $scope.updateScheduleItem = function(evt, submissionItem) {
+    var sessionInfo = Session(submissionItem.$id);
+    var speakerProfile = $scope.profiles.$getRecord(submissionItem.speaker_id);
+    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+  }
+
+  $scope.clearScheduleItem = function(scheduleItem) {
+    $scope.schedule.$remove(scheduleItem);
+  };
 
   function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
     $mdDialog.show({
