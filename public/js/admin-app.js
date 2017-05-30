@@ -105,6 +105,17 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
       })
     });
 
+    //Count of accepted, but unscheduled sessions
+    $scope.unscheduled = [];
+    $scope.schedule.$watch(function() {
+      $scope.unscheduled = [];
+      angular.forEach($scope.sessions, function(item) {
+        if (!$scope.schedule.$getRecord(item.$id)) {
+          $scope.unscheduled.push(item);
+        }
+      });
+    });
+
     // Compute reviewer data
     // TODO: Convert this computation to run with a cloud function
     $scope.scores = {};
@@ -382,26 +393,19 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return d.toLocaleTimeString();
   }
 
-  //Count of accepted, but unscheduled sessions
-  $scope.unscheduledCount = Math.max(0,
-    $scope.sessions.length - $scope.schedule.length);
-  $scope.schedule.$watch(function() {
-    $scope.unscheduledCount = Math.max(0,
-      $scope.sessions.length - $scope.schedule.length);
-  });
-
   //Show toast with scheduling status
   $scope.showScheduleStatus = function() {
     var message = "";
-    switch ($scope.unscheduledCount) {
+    var count = $scope.unscheduled.length;
+    switch (count) {
       case 0:
         message = "Schedule is complete!"
         break;
       case 1:
-        message = $scope.unscheduledCount+" talk left to schedule.";
+        message = count+" talk left to schedule.";
         break;
       default:
-        message = $scope.unscheduledCount+" talks left to schedule.";
+        message = count+" talks left to schedule.";
         break;
     }
 
@@ -434,9 +438,30 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return count < 2;
   }
 
-  $scope.updateScheduleItem = function(evt, submissionItem) {
+  $scope.addSession = function(evt) {
+    if ($scope.unscheduled.length > 0) {
+      ShowSessionsDialog(evt, $scope.unscheduled, $scope.profiles);
+    } else {
+      $mdToast.show(
+        $mdToast.simple()
+          .textContent('No more sessions to add.')
+          .hideDelay(3000)
+      );
+    }
+  }
+
+  //Add a submission to the schedule
+  $scope.scheduleSubmission = function(evt, submissionItem) {
     var sessionInfo = Session(submissionItem.$id);
     var speakerProfile = $scope.profiles.$getRecord(submissionItem.speaker_id);
+    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+  }
+
+  //Update schedule info for a submission
+  $scope.updateScheduleItem = function(evt, scheduleItem) {
+    var submissionItem = $scope.submissions.$getRecord(scheduleItem.submission_id);
+    var sessionInfo = Session(scheduleItem.$id);
+    var speakerProfile = $scope.profiles.$getRecord(scheduleItem.speaker_id);
     ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
   }
 
@@ -444,9 +469,49 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     $scope.schedule.$remove(scheduleItem);
   };
 
+  function ShowSessionsDialog(evt, sessionsList, profilesList) {
+    $mdDialog.show({
+      controller: SessionsDialogController,
+      templateUrl: 'sessions.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        sessions: sessionsList,
+        profiles: profilesList
+      }
+    })
+    .then(function(selectedItem) {
+      var sessionInfo = Session(selectedItem.$id);
+      var speakerProfile = $scope.profiles.$getRecord(selectedItem.speaker_id);
+      ShowScheduleDialog(evt, selectedItem, speakerProfile, sessionInfo);
+    },function() {
+      //Dialog cancelled
+    })
+  }
+
+  // Handler for sessions dialog events
+  function SessionsDialogController($scope, $mdDialog, sessions, profiles) {
+    $scope.sessions = sessions;
+    $scope.profiles = profiles;
+
+    $scope.selectItem = function(item) {
+      $mdDialog.hide(item);
+    }
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+  }
+
   function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
     $mdDialog.show({
-      controller: DialogController,
+      controller: ScheduleDialogController,
       templateUrl: 'schedule.tmpl.html',
       parent: angular.element(document.body),
       targetEvent: evt,
@@ -464,11 +529,9 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       sessionInfo.speaker_id = [submissionItem.speaker_id];
       sessionInfo.submission_id = submissionItem.$id;
       sessionInfo.event_type = 'session';
-      // Set the timestamps
-      var time = new Date(sessionInfo.start_time);
-      sessionInfo.start_time = time.toISOString();
-      time.setMinutes(time.getMinutes() + $scope.config.session_length);
-      sessionInfo.end_time = time.toISOString();
+      // Convert timestamps back to strings
+      sessionInfo.start_time = sessionInfo.start_time.toISOString();
+      sessionInfo.end_time = sessionInfo.end_time.toISOString();
 
       sessionInfo.$save().then(function() {
         $mdToast.show(
@@ -489,26 +552,14 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   }
 
   // Handler for schedule dialog events
-  function DialogController($scope, $mdDialog, config, entry, speaker, session) {
+  function ScheduleDialogController($scope, $mdDialog, config, entry, speaker, session) {
 
-    // Common functions to map the option values to date strings in database
-    $scope.getTimeKey = function(dateString) {
-      var d = new Date(dateString);
-      return d.toISOString();
-    };
-    $scope.getTimeLabel = function(dateString) {
-      var d = new Date(dateString);
-      return d.toLocaleString();
-    }
+    $scope.startDate = config.event_dates[0]+"T"+"00:00:00"
+    $scope.endDate = config.event_dates[config.event_dates.length-1]+"T"+"23:59:59"
 
-    $scope.timeOptions = [];
-    for (var i = 0; i < config.event_dates.length; i++) {
-      for (var j = 0; j < config.session_times.length; j++) {
-        var dateString = config.event_dates[i]+'T'+config.session_times[j];
-        var next = {value: $scope.getTimeKey(dateString), label: $scope.getTimeLabel(dateString)};
-        $scope.timeOptions.push(next);
-      }
-    }
+    //Convert session params to date objects
+    session.start_time = new Date(session.start_time);
+    session.end_time = new Date(session.end_time);
 
     $scope.roomOptions = [];
     for (var key in config.venue_rooms) {

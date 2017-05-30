@@ -18,13 +18,17 @@
         <h3>{{ entry.title }}</h3>
         <h4>{{ speaker.name }}</h4>
         <div layout="row">
-          <md-input-container class="md-block" flex>
-            <label>Time Slot</label>
-            <md-select required ng-model="session.start_time">
-              <md-option ng-repeat="option in timeOptions" ng-value="option.value">
-                {{ option.label }}
-              </md-option>
-            </md-select>
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Start Time</label>
+            <input required name="startTime" ng-model="session.start_time"
+                   type="datetime-local" step="900"
+                   min="{{ startDate }}" max="{{ endDate }}" />
+          </md-input-container>
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>End Time</label>
+            <input required name="endTime" ng-model="session.end_time"
+                   type="datetime-local" step="900"
+                   min="{{ startDate }}" max="{{ endDate }}" />
           </md-input-container>
         </div>
 

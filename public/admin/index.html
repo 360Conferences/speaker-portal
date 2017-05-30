@@ -212,11 +212,15 @@
               <div layout="column">
                 <!-- Schedule view -->
                 <div layout="row">
+                  <md-button class="md-raised md-primary" aria-label="Add Session"
+                             ng-click="addSession($event)">Add Session</md-button>
+                  <md-button class="md-raised md-primary" aria-label="Add Event"
+                             ng-click="">Add Event</md-button>
                   <div flex></div>
                   <md-icon ng-click="showScheduleStatus()"
-                           ng-show="unscheduledCount > 0" layout-align="end none">warning</md-icon>
+                           ng-show="unscheduled.length > 0" layout-align="end none">warning</md-icon>
                   <md-icon ng-click="showScheduleStatus()"
-                           ng-hide="unscheduledCount > 0" layout-align="end none">done</md-icon>
+                           ng-hide="unscheduled.length > 0" layout-align="end none">done</md-icon>
                 </div>
                 <md-tabs md-border-bottom md-autoselect md-dynamic-height>
                   <md-tab ng-repeat="date in config.event_dates"
@@ -231,17 +235,18 @@
                                  ng-click="updateScheduleItem($event,item)" flex>
                           <md-list-item class="md-2-line"
                                         layout="row" layout-align="center center">
-                           <div class="md-list-item-text" layout="column" layout-padding>
+                            <div class="md-list-item-text" layout="column" layout-padding>
                              <h3 style="padding: 0px;" flex>{{ submissions.$getRecord(item.submission_id).title }}</h3>
                              <h4 style="padding: 0px;">{{ getSpeakersLabel(item) }}</h4>
                              <h4 style="padding: 0px;">
-                               {{ item.start_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
+                               {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
                              </h4>
-                           </div>
-                           <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
+                             <h4 style="padding: 0px;">{{ config.session_levels[item.level] }}</h4>
+                            </div>
+                            <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
                                       ng-click="clearScheduleItem(item)">
                              <md-icon>close</md-icon>
-                           </md-button>
+                            </md-button>
                           </md-list-item>
                         </md-card>
 
@@ -250,25 +255,6 @@
                   </md-tab>
                 </md-tabs>
 
-                <!-- Selected talks list -->
-                <md-content>
-                  <h2>Unscheduled Talks</h2>
-                  <!-- List remaining talks without a schedule item -->
-                  <md-card md-theme="cardTheme"
-                           ng-repeat="item in sessions">
-                    <md-list-item class="md-2-line"
-                                  layout="row" layout-align="center center"
-                                  ng-hide="schedule.$getRecord(item.$id)"
-                                  ng-click="updateScheduleItem($event,item)">
-                     <div class="md-list-item-text" layout="column" layout-padding>
-                       <h3 style="padding: 0px;" flex>{{ item.title }}</h3>
-                       <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
-                     </div>
-                     <md-icon class="md-primary"
-                              ng-hide="isSpeakerUnique(item)">people_outline</md-icon>
-                    </md-list-item>
-                  </md-card>
-                </md-content>
               </div>
             </div>
           </ng-switch>
