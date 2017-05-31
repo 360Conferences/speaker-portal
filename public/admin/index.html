@@ -215,7 +215,7 @@
                   <md-button class="md-raised md-primary" aria-label="Add Session"
                              ng-click="addSession($event)">Add Session</md-button>
                   <md-button class="md-raised md-primary" aria-label="Add Event"
-                             ng-click="">Add Event</md-button>
+                             ng-click="addEvent($event)">Add Event</md-button>
                   <div flex></div>
                   <md-icon ng-click="showScheduleStatus()"
                            ng-show="unscheduled.length > 0" layout-align="end none">warning</md-icon>
@@ -232,16 +232,24 @@
 
                         <md-card md-theme="cardTheme"
                                  ng-repeat="item in scheduleMap[slot] | orderBy: 'room'"
-                                 ng-click="updateScheduleItem($event,item)" flex>
+                                 ng-click="updateScheduleItem($event,item)"
+                                 ng-switch="item.event_type" flex>
                           <md-list-item class="md-2-line"
                                         layout="row" layout-align="center center">
                             <div class="md-list-item-text" layout="column" layout-padding>
-                             <h3 style="padding: 0px;" flex>{{ submissions.$getRecord(item.submission_id).title }}</h3>
-                             <h4 style="padding: 0px;">{{ getSpeakersLabel(item) }}</h4>
-                             <h4 style="padding: 0px;">
-                               {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
-                             </h4>
-                             <h4 style="padding: 0px;">{{ config.session_levels[item.level] }}</h4>
+                              <!-- Session Data -->
+                              <h3 style="padding: 0px;" ng-switch-when="session" flex>{{ submissions.$getRecord(item.submission_id).title }}</h3>
+                              <h4 style="padding: 0px;" ng-switch-when="session">{{ getSpeakersLabel(item) }}</h4>
+                              <h4 style="padding: 0px;" ng-switch-when="session">
+                                {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
+                              </h4>
+                              <h4 style="padding: 0px;" ng-switch-when="session">{{ config.session_levels[item.level] }}</h4>
+                              <!-- Event Data -->
+                              <h3 style="padding: 0px;" ng-switch-when="event" flex>{{ item.title }}</h3>
+                              <h4 style="padding: 0px;" ng-switch-when="event">{{ item.location }}</h4>
+                              <h4 style="padding: 0px;" ng-switch-when="event">
+                                {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}
+                              </h4>
                             </div>
                             <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
                                       ng-click="clearScheduleItem(item)">

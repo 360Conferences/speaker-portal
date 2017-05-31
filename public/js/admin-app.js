@@ -450,6 +450,10 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     }
   }
 
+  $scope.addEvent = function(evt) {
+    ShowEventDialog(evt, null);
+  }
+
   //Add a submission to the schedule
   $scope.scheduleSubmission = function(evt, submissionItem) {
     var sessionInfo = Session(submissionItem.$id);
@@ -459,10 +463,23 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
 
   //Update schedule info for a submission
   $scope.updateScheduleItem = function(evt, scheduleItem) {
-    var submissionItem = $scope.submissions.$getRecord(scheduleItem.submission_id);
-    var sessionInfo = Session(scheduleItem.$id);
-    var speakerProfile = $scope.profiles.$getRecord(scheduleItem.speaker_id);
-    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+    switch (scheduleItem.event_type) {
+      case 'session':
+        var submissionItem = $scope.submissions.$getRecord(scheduleItem.submission_id);
+        var sessionInfo = Session(scheduleItem.$id);
+        var speakerProfile = $scope.profiles.$getRecord(scheduleItem.speaker_id);
+        ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+        break;
+      case 'event':
+        ShowEventDialog(evt, scheduleItem);
+        break;
+      default:
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Invalid Schedule Item')
+            .hideDelay(3000)
+        );
+    }
   }
 
   $scope.clearScheduleItem = function(scheduleItem) {
@@ -594,5 +611,74 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
         $mdDialog.hide(session);
       }
     }
+  }
+
+  function ShowEventDialog(evt, eventItem) {
+    $mdDialog.show({
+      controller: EventDialogController,
+      templateUrl: 'event.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        config: $scope.config,
+        entry: eventItem
+      }
+    })
+    .then(function(eventItem) {
+      // Event saved
+      eventItem.event_type = 'event';
+      // Convert timestamps back to strings
+      eventItem.start_time = eventItem.start_time.toISOString();
+      eventItem.end_time = eventItem.end_time.toISOString();
+
+      if (eventItem.$id) {
+        $scope.schedule.$save(eventItem).then(function() {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Event Updated')
+              .hideDelay(3000)
+          );
+        }).catch(function(error) {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Error updating event. Please try again later.')
+              .hideDelay(3000)
+          );
+        });
+      } else {
+        $scope.schedule.$add(eventItem);
+      }
+    },function() {
+      //Dialog cancelled
+    })
+  }
+
+  // Handler for scheduled event dialog events
+  function EventDialogController($scope, $mdDialog, config, entry) {
+
+    $scope.startDate = config.event_dates[0]+"T"+"00:00:00"
+    $scope.endDate = config.event_dates[config.event_dates.length-1]+"T"+"23:59:59"
+
+    //Convert entry params to date objects
+    if (entry) {
+      entry.start_time = new Date(entry.start_time);
+      entry.end_time = new Date(entry.end_time);
+    }
+
+    $scope.entry = entry;
+
+    $scope.save = function(entry) {
+      $mdDialog.hide(entry);
+    }
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
   }
 });

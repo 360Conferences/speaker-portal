@@ -1,0 +1,58 @@
+<md-dialog aria-label="Schedule Event">
+  <form name="eventForm" ng-submit="save(entry)">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Schedule Event</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="cancel()">
+          <md-icon>close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+      <div class="md-dialog-content">
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Event Title</label>
+          <input required ng-model="entry.title" />
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Event Location</label>
+          <input required ng-model="entry.location"/>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Event Address</label>
+          <input ng-model="entry.address"/>
+        </md-input-container>
+        <div layout="row">
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Start Time</label>
+            <input required name="startTime" ng-model="entry.start_time"
+                   type="datetime-local" step="900"
+                   min="{{ startDate }}" max="{{ endDate }}" />
+          </md-input-container>
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>End Time</label>
+            <input required name="endTime" ng-model="entry.end_time"
+                   type="datetime-local" step="900"
+                   min="{{ startDate }}" max="{{ endDate }}" />
+          </md-input-container>
+        </div>
+
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Description</label>
+          <textarea required ng-model="entry.description"></textarea>
+        </md-input-container>
+      </div>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button type="submit">Save</md-button>
+    </md-dialog-actions>
+
+  </form>
+</md-dialog>
