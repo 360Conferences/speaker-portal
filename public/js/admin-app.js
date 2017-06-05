@@ -107,19 +107,21 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
 
     //Count of accepted, but unscheduled sessions
     $scope.unscheduled = [];
-    $scope.schedule.$watch(function() {
+    function UpdateUnscheduled() {
       $scope.unscheduled = [];
       angular.forEach($scope.sessions, function(item) {
         if (!$scope.schedule.$getRecord(item.$id)) {
           $scope.unscheduled.push(item);
         }
       });
-    });
+    }
+    $scope.schedule.$watch(UpdateUnscheduled);
+    $scope.sessions.$watch(UpdateUnscheduled);
 
     // Compute reviewer data
-    // TODO: Convert this computation to run with a cloud function
     $scope.scores = {};
-    $scope.submissions.$loaded().then(function() {
+    $scope.submissions.$watch(function() {
+      $scope.scores = {};
       angular.forEach($scope.submissions, function(submission) {
         ComputeReviewScore(submission, $scope.scores);
       })
@@ -324,6 +326,10 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     $scope.submissions.$save(submissionItem);
   }
 
+  $scope.addSubmission = function(evt) {
+    ShowEntryDialog(evt, null, null);
+  };
+
   $scope.showSubmissionDetail = function(evt, submissionItem, profileItem) {
     ShowEntryDialog(evt, submissionItem, profileItem);
   }
@@ -338,36 +344,59 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       fullscreen: true,
       locals: {
         entry: submissionItem,
-        speaker: profileItem
+        speaker: profileItem,
+        profiles: $scope.profiles
       }
     })
     .then(function(item) {
-      // Submission save
-      $scope.submissions.$save(item).then(function() {
-        $mdToast.show(
-          $mdToast.simple()
-            .textContent('Submission Updated')
-            .hideDelay(3000)
-        );
-      }).catch(function(error) {
-        $mdToast.show(
-          $mdToast.simple()
-            .textContent('Error updating submission. Please try again later.')
-            .hideDelay(3000)
-        );
-      });
+      if (item.$id) {
+        // Save existing submission
+        $scope.submissions.$save(item).then(function() {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Submission Updated')
+              .hideDelay(3000)
+          );
+        }).catch(function(error) {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Error updating submission. Please try again later.')
+              .hideDelay(3000)
+          );
+        });
+      } else {
+        // Add new submission
+        $scope.submissions.$add(item).then(function() {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Submission Added')
+              .hideDelay(3000)
+          );
+        }).catch(function(error) {
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Error adding submission. Please try again later.')
+              .hideDelay(3000)
+          );
+        });
+      }
     },function() {
       // Dialog cancelled
     });
   }
 
   // Handler for entry dialog events
-  function DialogController($scope, $mdDialog, entry, speaker) {
+  function DialogController($scope, $mdDialog, entry, speaker, profiles) {
     $scope.entry = entry;
     $scope.speaker = speaker;
+    $scope.speakers = profiles;
 
     $scope.getScoreCount = function(scores) {
-      return Object.keys(scores).length;
+      if (scores) {
+        return Object.keys(scores).length;
+      }
+
+      return 0;
     };
 
     $scope.hide = function() {
@@ -379,7 +408,9 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     };
 
     $scope.save = function(item) {
-      $mdDialog.hide(item);
+      if ($scope.submissionForm.$valid) {
+        $mdDialog.hide(item);
+      }
     }
   }
 });

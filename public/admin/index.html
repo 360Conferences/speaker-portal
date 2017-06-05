@@ -181,6 +181,9 @@
                  <md-icon class="material-icons">&#xE8B6;</md-icon>
                  <input ng-model="subFilterText" placeholder="Filter List">
               </md-input-container>
+              
+              <md-button class="md-raised md-primary" aria-label="Add Submission"
+                         ng-click="addSubmission($event)">Add Submission</md-button>
 
               <md-card md-theme="cardTheme"
                        ng-repeat="item in submissions | orderBy:getSortParam:reverseSort | filter:submissionFilter track by item.$id">
