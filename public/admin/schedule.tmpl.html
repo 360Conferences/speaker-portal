@@ -16,7 +16,33 @@
 
       <div class="md-dialog-content">
         <h3>{{ entry.title }}</h3>
-        <h4>{{ speaker.name }}</h4>
+        <div layout="row" layout-align="center center">
+          <!-- Speaker Chips -->
+          <div ng-repeat="speaker in session.speaker_id">
+            <md-card layout="row" layout-align="center center">
+              <div layout-padding>{{ getSpeakerName(speaker) }}</div>
+              <!-- Remove button is hidden on the submitter's name -->
+              <md-button class="md-icon-button" aria-label="Remove speaker"
+                         ng-hide="isSpeakerSubmitter(speaker)"
+                         ng-click="removeSpeaker(speaker)">
+                <md-icon>close</md-icon>
+              </md-button>
+            </md-card>
+          </div>
+          <div flex></div>
+          <!-- Add Speaker Menu -->
+          <md-menu>
+           <md-button type='button' class="md-icon-button" aria-label="Add speaker"
+                      ng-click="$mdMenu.open($event)" >
+             <md-icon>add</md-icon>
+           </md-button>
+           <md-menu-content>
+             <md-menu-item ng-repeat="speaker in profiles">
+               <md-button ng-click="addSpeaker(speaker.$id)">{{speaker.name}}</md-button>
+             </md-menu-item>
+           </md-menu-content>
+          </md-menu>
+        </div>
         <div layout="row">
           <md-input-container class="md-block" flex-gt-sm>
             <label>Start Time</label>

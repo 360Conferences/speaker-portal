@@ -470,6 +470,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return count < 2;
   }
 
+  //TODO: Convert the first stage selection to a menu?
   $scope.addSession = function(evt) {
     if ($scope.unscheduled.length > 0) {
       ShowSessionsDialog(evt, $scope.unscheduled, $scope.profiles);
@@ -489,8 +490,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   //Add a submission to the schedule
   $scope.scheduleSubmission = function(evt, submissionItem) {
     var sessionInfo = Session(submissionItem.$id);
-    var speakerProfile = $scope.profiles.$getRecord(submissionItem.speaker_id);
-    ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+    ShowScheduleDialog(evt, submissionItem, sessionInfo);
   }
 
   //Update schedule info for a submission
@@ -499,8 +499,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       case 'session':
         var submissionItem = $scope.submissions.$getRecord(scheduleItem.submission_id);
         var sessionInfo = Session(scheduleItem.$id);
-        var speakerProfile = $scope.profiles.$getRecord(scheduleItem.speaker_id);
-        ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo);
+        ShowScheduleDialog(evt, submissionItem, sessionInfo);
         break;
       case 'event':
         ShowEventDialog(evt, scheduleItem);
@@ -533,8 +532,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     })
     .then(function(selectedItem) {
       var sessionInfo = Session(selectedItem.$id);
-      var speakerProfile = $scope.profiles.$getRecord(selectedItem.speaker_id);
-      ShowScheduleDialog(evt, selectedItem, speakerProfile, sessionInfo);
+      ShowScheduleDialog(evt, selectedItem, sessionInfo);
     },function() {
       //Dialog cancelled
     })
@@ -558,7 +556,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     };
   }
 
-  function ShowScheduleDialog(evt, submissionItem, speakerProfile, sessionInfo) {
+  function ShowScheduleDialog(evt, submissionItem, sessionInfo) {
     $mdDialog.show({
       controller: ScheduleDialogController,
       templateUrl: 'schedule.tmpl.html',
@@ -569,13 +567,14 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       locals: {
         config: $scope.config,
         entry: submissionItem,
-        speaker: speakerProfile,
+        profiles: $scope.profiles,
         session: sessionInfo
       }
     })
     .then(function(session){
       // Session saved
-      sessionInfo.speaker_id = [submissionItem.speaker_id];
+      // TODO: Fix the saving of the speaker ids
+      // sessionInfo.speaker_id = [submissionItem.speaker_id];
       sessionInfo.submission_id = submissionItem.$id;
       sessionInfo.event_type = 'session';
       // Convert timestamps back to strings
@@ -601,7 +600,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   }
 
   // Handler for schedule dialog events
-  function ScheduleDialogController($scope, $mdDialog, config, entry, speaker, session) {
+  function ScheduleDialogController($scope, $mdDialog, config, entry, profiles, session) {
 
     $scope.startDate = config.event_dates[0]+"T"+"00:00:00"
     $scope.endDate = config.event_dates[config.event_dates.length-1]+"T"+"23:59:59"
@@ -609,6 +608,10 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     //Convert session params to date objects
     session.start_time = new Date(session.start_time);
     session.end_time = new Date(session.end_time);
+    //Initialize the speaker list
+    if (!session.speaker_id) {
+      session.speaker_id = [entry.speaker_id];
+    }
 
     $scope.roomOptions = [];
     for (var key in config.venue_rooms) {
@@ -626,9 +629,28 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       }
     }
 
+    $scope.getSpeakerName = function(speaker_id) {
+      return $scope.profiles.$getRecord(speaker_id).name;
+    }
+
+    $scope.isSpeakerSubmitter = function(speaker_id) {
+      return (speaker_id == $scope.entry.speaker_id);
+    }
+
+    $scope.removeSpeaker = function(speaker_id) {
+      var index = $scope.session.speaker_id.indexOf(speaker_id);
+      if (index > -1) {
+        $scope.session.speaker_id.splice(index, 1);
+      }
+    }
+
+    $scope.addSpeaker = function(speaker_id) {
+      $scope.session.speaker_id.push(speaker_id);
+    }
+
     $scope.entry = entry;
-    $scope.speaker = speaker;
     $scope.session = session;
+    $scope.profiles = profiles;
 
     $scope.hide = function() {
       $mdDialog.hide();
