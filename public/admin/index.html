@@ -78,7 +78,7 @@
               <md-button ng-csv="exportProfiles()" filename="profiles.csv">Export Profiles</md-button>
             </md-menu-item>
             <md-menu-item>
-              <md-button ng-csv="exportSchedule()" filename="schedule.csv">Export Schedule</md-button>
+              <md-button ng-csv="exportSchedule()" filename="schedule.csv">Export Accepted Talks</md-button>
             </md-menu-item>
             <md-menu-item>
               <md-button ng-click="logoutUser()">Log Out</md-button>
@@ -181,7 +181,7 @@
                  <md-icon class="material-icons">&#xE8B6;</md-icon>
                  <input ng-model="subFilterText" placeholder="Filter List">
               </md-input-container>
-              
+
               <md-button class="md-raised md-primary" aria-label="Add Submission"
                          ng-click="addSubmission($event)">Add Submission</md-button>
 

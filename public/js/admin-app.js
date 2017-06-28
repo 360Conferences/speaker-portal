@@ -195,7 +195,8 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
         name: profile.name,
         email: profile.email,
         company: profile.company,
-        twitter: profile.twitter
+        twitter: profile.twitter,
+        image: $scope.avatarUrls[profile.$id]
       });
     }
 
