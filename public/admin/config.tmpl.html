@@ -25,10 +25,31 @@
                      ng-model="config.review_open"
                      ng-change="onConfigItemChanged()"></md-switch>
         </div>
+        <md-divider></md-divider>
+        <h4>Venue Info</h4>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Name</label>
+          <input ng-model="venue.name" />
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Phone</label>
+          <input ng-model="venue.phone" />
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Address</label>
+          <textarea rows="2" ng-model="venue.address"></textarea>
+        </md-input-container>
+
+        <h4>Session Rooms</h4>
+        <md-chips ng-model="venue.rooms"
+                  placeholder="Enter a session room"
+                  secondary-placeholder="New room"
+                  md-separator-keys="seperatorKeys"></md-chips>
       </div>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
+      <md-button ng-click="save()">Save</md-button>
     </md-dialog-actions>
 
 </md-dialog>

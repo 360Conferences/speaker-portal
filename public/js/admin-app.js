@@ -21,10 +21,14 @@ var app = angular
     });
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, Config, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, $mdToast, $mdConstant, Config, Venue, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
+  $scope.venue = Venue();
   $scope.validAdminUser = false;
+
+  // init geocoder
+  $scope.geocoder = new google.maps.Geocoder();
 
   // Set the navigation selections
   $scope.toggleSidenav = function() {
@@ -40,11 +44,11 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
   $scope.selectedPanel = 'speakers';
 
   $scope.showEventConfig = function(evt) {
-    ShowConfigDialog(evt, $scope.config);
+    ShowConfigDialog(evt, $scope.config, $scope.venue);
     $mdSidenav('left').close();
   }
 
-  function ShowConfigDialog(evt, config) {
+  function ShowConfigDialog(evt, config, venue) {
     $mdDialog.show({
       controller: DialogController,
       templateUrl: 'config.tmpl.html',
@@ -53,17 +57,46 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
       clickOutsideToClose:true,
       fullscreen: true,
       locals: {
-        localConfig: config
+        localConfig: config,
+        localVenue: venue
       }
     })
-    .then(function() {
+    .then(function(venue) {
+      // Geocode the address, then save
+      $scope.geocoder.geocode( { 'address': venue.address}, function(results, status) {
+          if (status == 'OK') {
+            venue.latitude = results[0].geometry.location.lat();
+            venue.longitude = results[0].geometry.location.lng();
+            venue.$save().then(function() {
+              $mdToast.show(
+                $mdToast.simple()
+                  .textContent('Venue updated')
+                  .hideDelay(3000)
+              );
+            });
+          } else {
+            $mdToast.show(
+              $mdToast.simple()
+                .textContent('Unable to geocode venue location')
+                .hideDelay(3000)
+            );
+          }
+        });
+    },function() {
       // Dialog cancelled
     });
   }
 
   // Handler for config dialog events
-  function DialogController($scope, $mdDialog, localConfig) {
+  function DialogController($scope, $mdDialog, localConfig, localVenue) {
     $scope.config = localConfig;
+    $scope.venue = localVenue;
+    $scope.seperatorKeys = [$mdConstant.KEY_CODE.ENTER, $mdConstant.KEY_CODE.COMMA];
+
+    if (!$scope.venue.rooms) {
+      $scope.venue.rooms = [];
+    }
+
     $scope.onConfigItemChanged = function() {
       $scope.config.$save();
     }
@@ -72,9 +105,13 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
       $mdDialog.hide();
     };
 
+    $scope.save = function() {
+      $mdDialog.hide($scope.venue);
+    };
+
     $scope.close = function() {
       $mdDialog.hide();
-    };
+    }
   }
 
   // create an instance of the authentication service
@@ -613,6 +650,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       session.speaker_id = [entry.speaker_id];
     }
 
+    //TODO: Update UI to use real venue room options
     $scope.roomOptions = [];
     for (var key in config.venue_rooms) {
       if (config.venue_rooms.hasOwnProperty(key)) {

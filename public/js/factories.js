@@ -5,6 +5,7 @@ angular.module("conference.model", []);
 
 // Constant values
 var CONFIG_URL = "config";
+var VENUE_URL = "2017/venue";
 var PROFILE_URL = "2017/profiles";
 var SUBMISSION_URL = "2017/submissions";
 var SESSION_URL = "2017/schedule";
@@ -14,6 +15,17 @@ angular.module("conference.model").factory("Config", ["$firebaseObject",
   function($firebaseObject) {
     return function() {
       var ref = firebase.database().ref(CONFIG_URL);
+
+      return $firebaseObject(ref);
+    }
+  }
+]);
+
+// Retrieve venue info object
+angular.module("conference.model").factory("Venue", ["$firebaseObject",
+  function($firebaseObject) {
+    return function() {
+      var ref = firebase.database().ref(VENUE_URL);
 
       return $firebaseObject(ref);
     }
