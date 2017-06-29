@@ -1,36 +1,38 @@
 {
   "rules": {
-    "config": {
-      ".read": true,
-      ".write": "root.child('config/admins').hasChild(auth.uid)"
-    },
     "events": {
       "$eventid": {
+        "config": {
+          ".read": true,
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
+        },
         "profiles": {
           "$uid": {
-            ".read": "auth.uid == $uid",
+            ".read": true,
             ".write": "auth.uid == $uid"
           },
-          ".read": "root.child('config/admins').hasChild(auth.uid)",
-          ".write": "root.child('config/admins').hasChild(auth.uid)"
+          ".read": true,
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "submissions": {
-          ".read": "auth.uid != null",
+          ".read": true,
           ".write": "auth.uid != null"
         },
         "schedule": {
           ".read": true,
-          ".write": "root.child('config/admins').hasChild(auth.uid)"
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "venue": {
            ".read": true,
-          ".write": "root.child('config/admins').hasChild(auth.uid)"
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "feedback": {
           ".read": true,
           ".write": false
         }
-      }
+      },
+      ".read": true,
+      ".write": false
     }
   }
 }

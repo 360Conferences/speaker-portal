@@ -110,7 +110,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     };
 
     $scope.close = function() {
-      $mdDialog.hide();
+      $mdDialog.cancel();
     }
   }
 

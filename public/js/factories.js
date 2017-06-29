@@ -3,13 +3,14 @@
  */
 angular.module("conference.model", []);
 
-// Constant values
+// Database constant values
 var EVENT_ID = "events/360andev-2017"
-var CONFIG_URL = "config";
+var CONFIG_URL = EVENT_ID + "/config";
 var VENUE_URL = EVENT_ID + "/venue";
 var PROFILE_URL = EVENT_ID + "/profiles";
 var SUBMISSION_URL = EVENT_ID + "/submissions";
 var SESSION_URL = EVENT_ID + "/schedule";
+// Storage constant values
 var AVATAR_URL = "2017/profiles";
 
 // Retrieve the app config object
