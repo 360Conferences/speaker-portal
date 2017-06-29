@@ -242,14 +242,15 @@
                                         layout="row" layout-align="center center">
                             <div class="md-list-item-text" layout="column" layout-padding>
                               <!-- Session Data -->
-                              <h3 style="padding: 0px;" ng-switch-when="session" flex>{{ submissions.$getRecord(item.submission_id).title }}</h3>
+                              <h3 style="padding: 0px;" ng-switch-when="session">{{ submissions.$getRecord(item.submission_id).title }}</h3>
                               <h4 style="padding: 0px;" ng-switch-when="session">{{ getSpeakersLabel(item) }}</h4>
                               <h4 style="padding: 0px;" ng-switch-when="session">
-                                {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}, {{ config.venue_rooms[item.room] }}
+                                {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }},
+                                {{ config.venue_rooms[item.room] }}
+                                -- {{ config.session_levels[item.level] }}
                               </h4>
-                              <h4 style="padding: 0px;" ng-switch-when="session">{{ config.session_levels[item.level] }}</h4>
                               <!-- Event Data -->
-                              <h3 style="padding: 0px;" ng-switch-when="event" flex>{{ item.title }}</h3>
+                              <h3 style="padding: 0px;" ng-switch-when="event">{{ item.title }}</h3>
                               <h4 style="padding: 0px;" ng-switch-when="event">{{ item.location }}</h4>
                               <h4 style="padding: 0px;" ng-switch-when="event">
                                 {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}
