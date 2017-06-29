@@ -4,11 +4,13 @@
 angular.module("conference.model", []);
 
 // Constant values
+var EVENT_ID = "events/360andev-2017"
 var CONFIG_URL = "config";
-var VENUE_URL = "2017/venue";
-var PROFILE_URL = "2017/profiles";
-var SUBMISSION_URL = "2017/submissions";
-var SESSION_URL = "2017/schedule";
+var VENUE_URL = EVENT_ID + "/venue";
+var PROFILE_URL = EVENT_ID + "/profiles";
+var SUBMISSION_URL = EVENT_ID + "/submissions";
+var SESSION_URL = EVENT_ID + "/schedule";
+var AVATAR_URL = "2017/profiles";
 
 // Retrieve the app config object
 angular.module("conference.model").factory("Config", ["$firebaseObject",
@@ -64,7 +66,7 @@ angular.module("conference.model").factory("ProfileList", ["$firebaseArray",
 angular.module("conference.model").factory("Avatar", ["$firebaseStorage",
   function($firebaseStorage) {
     return function(uid) {
-      var ref = firebase.storage().ref(PROFILE_URL);
+      var ref = firebase.storage().ref(AVATAR_URL);
       var avatarRef = ref.child(uid);
 
       return $firebaseStorage(avatarRef);

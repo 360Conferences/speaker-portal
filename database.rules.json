@@ -4,38 +4,32 @@
       ".read": true,
       ".write": "root.child('config/admins').hasChild(auth.uid)"
     },
-    "$year": {
-      "profiles": {
-        "$uid": {
-          ".read": "auth.uid == $uid",
-          ".write": "auth.uid == $uid"
+    "events": {
+      "$eventid": {
+        "profiles": {
+          "$uid": {
+            ".read": "auth.uid == $uid",
+            ".write": "auth.uid == $uid"
+          },
+          ".read": "root.child('config/admins').hasChild(auth.uid)",
+          ".write": "root.child('config/admins').hasChild(auth.uid)"
         },
-        ".read": "root.child('config/admins').hasChild(auth.uid)",
-        ".write": "root.child('config/admins').hasChild(auth.uid)"
-      },
-      "submissions": {
-        ".read": "auth.uid != null",
-        ".write": "auth.uid != null"
-      },
-      "schedule": {
-        ".read": true,
-        ".write": "root.child('config/admins').hasChild(auth.uid)"
-      },
-      "sessions": {
-        ".read": true,
-        ".write": false
-      },
-      "speakers": {
-        ".read": true,
-        ".write": false
-      },
-      "venue": {
-         ".read": true,
-        ".write": "root.child('config/admins').hasChild(auth.uid)"
-      },
-      "feedback": {
-        ".read": true,
-        ".write": false
+        "submissions": {
+          ".read": "auth.uid != null",
+          ".write": "auth.uid != null"
+        },
+        "schedule": {
+          ".read": true,
+          ".write": "root.child('config/admins').hasChild(auth.uid)"
+        },
+        "venue": {
+           ".read": true,
+          ".write": "root.child('config/admins').hasChild(auth.uid)"
+        },
+        "feedback": {
+          ".read": true,
+          ".write": false
+        }
       }
     }
   }
