@@ -488,7 +488,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   //Collect speakers into single label
   $scope.getSpeakersLabel = function(scheduleItem) {
     var names = [];
-    angular.forEach(scheduleItem.speaker_id, function(id) {
+    angular.forEach(scheduleItem.speakers, function(id) {
       names.push($scope.profiles.$getRecord(id).name);
     })
 
@@ -559,8 +559,6 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     })
     .then(function(session){
       // Session saved
-      // TODO: Fix the saving of the speaker ids
-      // sessionInfo.speaker_id = [submissionItem.speaker_id];
       sessionInfo.submission_id = submissionItem.$id;
       sessionInfo.event_type = 'session';
       // Convert timestamps back to strings
@@ -595,9 +593,13 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     session.start_time = new Date(session.start_time);
     session.end_time = new Date(session.end_time);
     //Initialize the speaker list
-    if (!session.speaker_id) {
-      session.speaker_id = [entry.speaker_id];
+    if (!session.speakers) {
+      session.speakers = [entry.speaker_id];
     }
+    
+    $scope.entry = entry;
+    $scope.session = session;
+    $scope.profiles = profiles;
 
     //TODO: Update UI to use real venue room options
     $scope.roomOptions = [];
@@ -625,19 +627,15 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     }
 
     $scope.removeSpeaker = function(speaker_id) {
-      var index = $scope.session.speaker_id.indexOf(speaker_id);
+      var index = $scope.session.speakers.indexOf(speaker_id);
       if (index > -1) {
-        $scope.session.speaker_id.splice(index, 1);
+        $scope.session.speakers.splice(index, 1);
       }
     }
 
     $scope.addSpeaker = function(speaker_id) {
-      $scope.session.speaker_id.push(speaker_id);
+      $scope.session.speakers.push(speaker_id);
     }
-
-    $scope.entry = entry;
-    $scope.session = session;
-    $scope.profiles = profiles;
 
     $scope.hide = function() {
       $mdDialog.hide();

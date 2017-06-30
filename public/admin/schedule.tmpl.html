@@ -18,7 +18,7 @@
         <h3>{{ entry.title }}</h3>
         <div layout="row" layout-align="center center">
           <!-- Speaker Chips -->
-          <div ng-repeat="speaker in session.speaker_id">
+          <div ng-repeat="speaker in session.speakers">
             <md-card layout="row" layout-align="center center">
               <div layout-padding>{{ getSpeakerName(speaker) }}</div>
               <!-- Remove button is hidden on the submitter's name -->
