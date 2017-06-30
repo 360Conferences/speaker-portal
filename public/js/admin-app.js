@@ -122,7 +122,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     // Fetch firebase data
     $scope.profiles = ProfileList();
     $scope.submissions = SubmissionList();
-    $scope.sessions = AcceptedSubmissions();
+    $scope.acceptedSubmissions = AcceptedSubmissions();
     $scope.schedule = SessionList();
 
     // Schedule mapped by start time for UI
@@ -146,14 +146,14 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     $scope.unscheduled = [];
     function UpdateUnscheduled() {
       $scope.unscheduled = [];
-      angular.forEach($scope.sessions, function(item) {
+      angular.forEach($scope.acceptedSubmissions, function(item) {
         if (!$scope.schedule.$getRecord(item.$id)) {
           $scope.unscheduled.push(item);
         }
       });
     }
     $scope.schedule.$watch(UpdateUnscheduled);
-    $scope.sessions.$watch(UpdateUnscheduled);
+    $scope.acceptedSubmissions.$watch(UpdateUnscheduled);
 
     // Compute reviewer data
     $scope.scores = {};
@@ -242,8 +242,8 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
 
   $scope.exportSchedule = function() {
     var exportList = [];
-    for (var i = 0; i < $scope.sessions.length; i++) {
-      var session = $scope.sessions[i];
+    for (var i = 0; i < $scope.acceptedSubmissions.length; i++) {
+      var session = $scope.acceptedSubmissions[i];
       var speaker = $scope.profiles.$getRecord(session.speaker_id);
       var schedule = $scope.schedule.$getRecord(session.$id);
       exportList.push({
@@ -495,11 +495,11 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return names.join(", ");
   }
 
-  //Verify is multiple talks accepted by same speaker
+  //Verify if multiple talks accepted by same speaker
   $scope.isSpeakerUnique = function(scheduleItem) {
     var count = 0;
-    for (session of $scope.sessions) {
-      if (session.speaker_id === scheduleItem.speaker_id) {
+    for (submission of $scope.acceptedSubmissions) {
+      if (submission.speaker_id === scheduleItem.speaker_id) {
         count++;
       }
     }
@@ -507,19 +507,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     return count < 2;
   }
 
-  //TODO: Convert the first stage selection to a menu?
-  $scope.addSession = function(evt) {
-    if ($scope.unscheduled.length > 0) {
-      ShowSessionsDialog(evt, $scope.unscheduled, $scope.profiles);
-    } else {
-      $mdToast.show(
-        $mdToast.simple()
-          .textContent('No more sessions to add.')
-          .hideDelay(3000)
-      );
-    }
-  }
-
+  //Create a new event for the schedule
   $scope.addEvent = function(evt) {
     ShowEventDialog(evt, null);
   }
@@ -553,45 +541,6 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   $scope.clearScheduleItem = function(scheduleItem) {
     $scope.schedule.$remove(scheduleItem);
   };
-
-  function ShowSessionsDialog(evt, sessionsList, profilesList) {
-    $mdDialog.show({
-      controller: SessionsDialogController,
-      templateUrl: 'sessions.tmpl.html',
-      parent: angular.element(document.body),
-      targetEvent: evt,
-      clickOutsideToClose:true,
-      fullscreen: true,
-      locals: {
-        sessions: sessionsList,
-        profiles: profilesList
-      }
-    })
-    .then(function(selectedItem) {
-      var sessionInfo = Session(selectedItem.$id);
-      ShowScheduleDialog(evt, selectedItem, sessionInfo);
-    },function() {
-      //Dialog cancelled
-    })
-  }
-
-  // Handler for sessions dialog events
-  function SessionsDialogController($scope, $mdDialog, sessions, profiles) {
-    $scope.sessions = sessions;
-    $scope.profiles = profiles;
-
-    $scope.selectItem = function(item) {
-      $mdDialog.hide(item);
-    }
-
-    $scope.hide = function() {
-      $mdDialog.hide();
-    };
-
-    $scope.cancel = function() {
-      $mdDialog.cancel();
-    };
-  }
 
   function ShowScheduleDialog(evt, submissionItem, sessionInfo) {
     $mdDialog.show({

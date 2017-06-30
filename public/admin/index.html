@@ -167,7 +167,7 @@
             <div ng-switch-when="submissions" ng-controller="SubmissionCtrl">
               <div layout="row">
                 <h2 flex>Submission Count: {{ submissions.length }}
-                  ({{ sessions.length }} accepted)</h2>
+                  ({{ acceptedSubmissions.length }} accepted)</h2>
                 <md-input-container class="md-block">
                   <label>Sort By</label>
                   <md-select ng-model="sortProperty">
@@ -216,8 +216,20 @@
               <div layout="column">
                 <!-- Schedule view -->
                 <div layout="row">
-                  <md-button class="md-raised md-primary" aria-label="Add Session"
-                             ng-click="addSession($event)">Add Session</md-button>
+                  <!-- Add Session Menu -->
+                  <md-menu>
+                   <md-button class="md-raised md-primary" aria-label="Add Session"
+                              ng-click="$mdMenu.open($event)">Add Session</md-button>
+                   <md-menu-content>
+                     <md-menu-item ng-repeat="item in unscheduled">
+                       <md-button ng-click="scheduleSubmission($event,item)">{{item.title}}</md-button>
+                     </md-menu-item>
+                     <md-menu-item ng-hide="unscheduled.length">
+                       <p>No Sessions to Add</p>
+                     </md-menu-item>
+                   </md-menu-content>
+                  </md-menu>
+                  <!-- Add Event Dialog -->
                   <md-button class="md-raised md-primary" aria-label="Add Event"
                              ng-click="addEvent($event)">Add Event</md-button>
                   <div flex></div>
