@@ -62,8 +62,8 @@
           <md-input-container class="md-block" flex>
             <label>Room</label>
             <md-select required ng-model="session.room">
-              <md-option ng-repeat="option in roomOptions" ng-value="option.value">
-                {{option.label}}
+              <md-option ng-repeat="option in roomOptions" ng-value="option">
+                {{option}}
               </md-option>
             </md-select>
           </md-input-container>

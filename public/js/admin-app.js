@@ -552,6 +552,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       fullscreen: true,
       locals: {
         config: $scope.config,
+        rooms: $scope.venue.rooms,
         entry: submissionItem,
         profiles: $scope.profiles,
         session: sessionInfo
@@ -561,9 +562,9 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       // Session saved
       sessionInfo.submission_id = submissionItem.$id;
       sessionInfo.event_type = 'session';
-      // Convert timestamps back to strings
-      sessionInfo.start_time = sessionInfo.start_time.toISOString();
-      sessionInfo.end_time = sessionInfo.end_time.toISOString();
+      // Convert timestamps back to strings, fixed for mobile TZ offset
+      sessionInfo.start_time = sessionInfo.start_time.toISOString().replace("Z", "+0000");
+      sessionInfo.end_time = sessionInfo.end_time.toISOString().replace("Z", "+0000");
 
       sessionInfo.$save().then(function() {
         $mdToast.show(
@@ -584,7 +585,7 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   }
 
   // Handler for schedule dialog events
-  function ScheduleDialogController($scope, $mdDialog, config, entry, profiles, session) {
+  function ScheduleDialogController($scope, $mdDialog, config, rooms, entry, profiles, session) {
 
     $scope.startDate = config.event_dates[0]+"T"+"00:00:00"
     $scope.endDate = config.event_dates[config.event_dates.length-1]+"T"+"23:59:59"
@@ -596,19 +597,12 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     if (!session.speakers) {
       session.speakers = [entry.speaker_id];
     }
-    
+
     $scope.entry = entry;
     $scope.session = session;
     $scope.profiles = profiles;
 
-    //TODO: Update UI to use real venue room options
-    $scope.roomOptions = [];
-    for (var key in config.venue_rooms) {
-      if (config.venue_rooms.hasOwnProperty(key)) {
-        var next = {value: key, label: config.venue_rooms[key]};
-        $scope.roomOptions.push(next);
-      }
-    }
+    $scope.roomOptions = rooms;
 
     $scope.levelOptions = [];
     for (var key in config.session_levels) {
@@ -668,9 +662,9 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     .then(function(eventItem) {
       // Event saved
       eventItem.event_type = 'event';
-      // Convert timestamps back to strings
-      eventItem.start_time = eventItem.start_time.toISOString();
-      eventItem.end_time = eventItem.end_time.toISOString();
+      // Convert timestamps back to strings with mobile-friendly TZ offsets
+      eventItem.start_time = eventItem.start_time.toISOString().replace("Z", "+0000");
+      eventItem.end_time = eventItem.end_time.toISOString().replace("Z", "+0000");
 
       if (eventItem.$id) {
         $scope.schedule.$save(eventItem).then(function() {
