@@ -563,8 +563,8 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       sessionInfo.submission_id = submissionItem.$id;
       sessionInfo.event_type = 'session';
       // Convert timestamps back to strings, fixed for mobile TZ offset
-      sessionInfo.start_time = sessionInfo.start_time.toISOString().replace("Z", "+0000");
-      sessionInfo.end_time = sessionInfo.end_time.toISOString().replace("Z", "+0000");
+      sessionInfo.start_time = moment(sessionInfo.start_time).format();
+      sessionInfo.end_time = moment(sessionInfo.end_time).format();
 
       sessionInfo.$save().then(function() {
         $mdToast.show(
@@ -663,8 +663,8 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
       // Event saved
       eventItem.event_type = 'event';
       // Convert timestamps back to strings with mobile-friendly TZ offsets
-      eventItem.start_time = eventItem.start_time.toISOString().replace("Z", "+0000");
-      eventItem.end_time = eventItem.end_time.toISOString().replace("Z", "+0000");
+      eventItem.start_time = moment(eventItem.start_time).format();
+      eventItem.end_time = moment(eventItem.end_time).format();
 
       if (eventItem.$id) {
         $scope.schedule.$save(eventItem).then(function() {
