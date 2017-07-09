@@ -27,8 +27,8 @@
           ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "feedback": {
-          ".read": true,
-          ".write": false
+          ".read": "auth.uid != null",
+          ".write": true
         }
       },
       ".read": true,
