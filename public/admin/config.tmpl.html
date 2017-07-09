@@ -25,6 +25,12 @@
                      ng-model="config.review_open"
                      ng-change="onConfigItemChanged()"></md-switch>
         </div>
+        <div layout="row">
+          <p flex>Session Feedback Visible</p>
+          <md-switch class="md-secondary" aria-label="Feedback Enable"
+                     ng-model="config.show_feedback"
+                     ng-change="onConfigItemChanged()"></md-switch>
+        </div>
         <md-divider></md-divider>
         <h4>Venue Info</h4>
         <md-input-container class="md-block" flex-gt-sm>
