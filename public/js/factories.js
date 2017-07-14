@@ -10,6 +10,7 @@ var VENUE_URL = EVENT_ID + "/venue";
 var PROFILE_URL = EVENT_ID + "/profiles";
 var SUBMISSION_URL = EVENT_ID + "/submissions";
 var SESSION_URL = EVENT_ID + "/schedule";
+var FEEDBACK_URL = EVENT_ID + "/feedback";
 // Storage constant values
 var AVATAR_URL = "2017/profiles";
 
@@ -29,6 +30,17 @@ angular.module("conference.model").factory("Venue", ["$firebaseObject",
   function($firebaseObject) {
     return function() {
       var ref = firebase.database().ref(VENUE_URL);
+
+      return $firebaseObject(ref);
+    }
+  }
+]);
+
+// Retrieve feedback info object
+angular.module("conference.model").factory("Feedback", ["$firebaseObject",
+  function($firebaseObject) {
+    return function() {
+      var ref = firebase.database().ref(FEEDBACK_URL);
 
       return $firebaseObject(ref);
     }

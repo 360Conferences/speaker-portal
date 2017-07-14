@@ -37,9 +37,11 @@
         </md-input-container>
 
         <div ng-show="entry.scores">
-          <h4>{{ getScoreCount(entry.scores) }} Votes</h4>
+          <h4>Reviewer Votes</h4>
           <div layout="row">
-            <p ng-repeat="score in entry.scores" layout-margin>{{ score }}</p>
+            <div ng-repeat="score in entry.scores" class="score-container-small">
+              <h2>{{score | number:0}}</h2>
+            </div>
           </div>
         </div>
 
@@ -48,6 +50,20 @@
           <ul>
             <li ng-repeat="comment in entry.comments">{{ comment }}</li>
           </ul>
+        </div>
+
+        <div ng-show="feedback">
+          <h4>Feedback Scores</h4>
+          <div layout="row">
+            <h4 flex>Overall Experience</h4>
+            <h4 flex>Technical Level</h4>
+            <h4 flex>Speaker Skills</h4>
+          </div>
+          <div ng-repeat="item in feedback" layout="row">
+            <p flex>{{item.overall | number:1}}</p>
+            <p flex>{{item.technical | number:1}}</p>
+            <p flex>{{item.speaker | number:1}}</p>
+          </div>
         </div>
       </div>
     </md-dialog-content>

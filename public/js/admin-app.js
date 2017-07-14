@@ -21,7 +21,7 @@ var app = angular
     });
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, $mdToast, $mdConstant, Config, Venue, Avatar, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, $mdToast, $mdConstant, Config, Venue, Avatar, Feedback, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
   $scope.venue = Venue();
@@ -124,6 +124,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     $scope.submissions = SubmissionList();
     $scope.acceptedSubmissions = AcceptedSubmissions();
     $scope.schedule = SessionList();
+    $scope.feedback = Feedback();
 
     // Schedule mapped by start time for UI
     $scope.scheduleMap = {};
@@ -307,7 +308,7 @@ app.controller("ProfileCtrl", function($scope, $firebaseArray, $mdDialog) {
     };
 
     $scope.close = function() {
-      $mdDialog.hide();
+      $mdDialog.cancel();
     };
   }
 });
@@ -354,6 +355,32 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     }
   }
 
+  $scope.getOverallAvg = function(scores) {
+    return getAverageScore("overall", scores);
+  }
+
+  $scope.getTechnicalAvg = function(scores) {
+    return getAverageScore("technical", scores);
+  }
+
+  $scope.getSpeakerAvg = function(scores) {
+    return getAverageScore("speaker", scores);
+  }
+
+  function getAverageScore(score_type, scores) {
+    var sum = 0.0;
+    var count = 0;
+
+    for (var key in scores) {
+      if (scores.hasOwnProperty(key)) {
+        sum += scores[key][score_type];
+        count++;
+      }
+    }
+
+    return sum / count;
+  }
+
   $scope.onTalkSelectionChanged = function(submissionItem) {
     if (!submissionItem.accepted) {
       // Delete any existing schedule information
@@ -383,6 +410,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       locals: {
         entry: submissionItem,
         speaker: profileItem,
+        feedback: $scope.feedback.scores[submissionItem.$id],
         profiles: $scope.profiles
       }
     })
@@ -424,18 +452,11 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   }
 
   // Handler for entry dialog events
-  function DialogController($scope, $mdDialog, entry, speaker, profiles) {
+  function DialogController($scope, $mdDialog, entry, speaker, feedback, profiles) {
     $scope.entry = entry;
     $scope.speaker = speaker;
+    $scope.feedback = feedback;
     $scope.speakers = profiles;
-
-    $scope.getScoreCount = function(scores) {
-      if (scores) {
-        return Object.keys(scores).length;
-      }
-
-      return 0;
-    };
 
     $scope.hide = function() {
       $mdDialog.hide();
@@ -711,6 +732,106 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
     };
 
     $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+  }
+});
+
+/* Controller to view session feedback */
+app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, Config) {
+
+  // Return an object of uids and amount of feedback for each
+  function getFeedbackCounts() {
+    var result = {}
+    // Iterate over sessions with feedback
+    for (var key in $scope.feedback.scores) {
+      if ($scope.feedback.scores.hasOwnProperty(key)) {
+        // Iterate over each feedback item
+        var feedbackItem = $scope.feedback.scores[key]
+        for (var uid in feedbackItem) {
+          if (feedbackItem.hasOwnProperty(uid)) {
+            if (result[uid] != undefined) {
+              result[uid]++;
+            } else {
+              result[uid] = 0;
+            }
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  $scope.getSessionFeedbackCount = function() {
+    return Object.keys($scope.feedback.scores).length;
+  };
+
+  $scope.getAttendeeFeedbackCount = function() {
+    var result = getFeedbackCounts();
+    return Object.keys(result).length;
+  };
+
+  $scope.getTotalFeedbackCount = function() {
+    var result = getFeedbackCounts();
+    var count = 0;
+    for (var uid in result) {
+      if (result.hasOwnProperty(uid)) {
+        count += result[uid];
+      }
+    }
+
+    return count;
+  }
+
+  $scope.showRaffleList = function(evt) {
+    ShowRaffleDialog(evt);
+  };
+
+  function getRaffleList() {
+    var names = [];
+    for (var uid in $scope.feedback.users) {
+      if ($scope.feedback.users.hasOwnProperty(uid)) {
+        names.push($scope.feedback.users[uid]);
+      }
+    }
+
+    shuffle(names);
+    return names;
+  }
+
+  /**
+   * Shuffles array in place. ES6 version
+   */
+  function shuffle(a) {
+      for (let i = a.length; i; i--) {
+          let j = Math.floor(Math.random() * i);
+          [a[i - 1], a[j]] = [a[j], a[i - 1]];
+      }
+  }
+
+  function ShowRaffleDialog(evt) {
+    $mdDialog.show({
+      controller: RaffleDialogController,
+      templateUrl: 'raffle.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        entries: getRaffleList()
+      }
+    })
+  }
+
+  function RaffleDialogController($scope, $mdDialog, entries) {
+    $scope.entries = entries;
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.close = function() {
       $mdDialog.cancel();
     };
   }

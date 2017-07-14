@@ -53,6 +53,7 @@
         <md-list-item ng-click="showView('speakers')">Speakers</md-list-item>
         <md-list-item ng-click="showView('submissions')">Submissions</md-list-item>
         <md-list-item ng-click="showView('schedule')">Schedule</md-list-item>
+        <md-list-item ng-click="showView('feedback')">Feedback</md-list-item>
         <md-divider></md-divider>
         <md-list-item ng-click="showEventConfig($event)">Event Config</md-list-item>
       </md-list>
@@ -198,12 +199,19 @@
                  </div>
                  <div class="md-list-item-text" layout="column" layout-padding>
                    <div style="padding: 0px;" layout="row">
-                     <h3 flex><strong>{{ $index+1 }}.</strong> {{ item.title }}</h3>
+                     <h3><strong>{{ $index+1 }}.</strong> {{ item.title }}</h3>
                      <md-icon ng-show="item.comments">comment</md-icon>
+                     <div flex></div>
                    </div>
 
                    <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
                    <p style="padding: 0px;">{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
+                 </div>
+                 <!-- Feedback Averages -->
+                 <div ng-show="feedback.scores[item.$id]" layout="column">
+                   <p class="feedback-item">{{ getOverallAvg(feedback.scores[item.$id]) | number:1}}</p>
+                   <p class="feedback-item">{{ getTechnicalAvg(feedback.scores[item.$id]) | number:1}}</p>
+                   <p class="feedback-item">{{ getSpeakerAvg(feedback.scores[item.$id]) | number:1}}</p>
                  </div>
                  <!-- Admin control to mark a talk accepted -->
                  <md-switch ng-model="item.accepted"
@@ -283,6 +291,15 @@
                 </md-tabs>
 
               </div>
+            </div>
+            <!-- Feedback View -->
+            <div ng-switch-when="feedback" ng-controller="FeedbackCtrl">
+              <h2 flex>Sessions Receiving Feedback: {{ getSessionFeedbackCount() }}</h2>
+              <h2 flex>Attendees Submitting Feedback: {{ getAttendeeFeedbackCount() }}</h2>
+              <h2 flex>Total Feedback Entries: {{ getTotalFeedbackCount() }}</h2>
+              <!-- Raffle Entries -->
+              <md-button class="md-raised md-primary" aria-label="Show Raffle"
+                         ng-click="showRaffleList($event)">Generate Raffle List</md-button>
             </div>
           </ng-switch>
         </div>
