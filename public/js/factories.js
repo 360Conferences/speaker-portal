@@ -39,10 +39,15 @@ angular.module("conference.model").factory("Venue", ["$firebaseObject",
 // Retrieve feedback info object
 angular.module("conference.model").factory("Feedback", ["$firebaseObject",
   function($firebaseObject) {
-    return function() {
+    return function(id) {
       var ref = firebase.database().ref(FEEDBACK_URL);
-
-      return $firebaseObject(ref);
+      if (id) {
+        var scoresRef = ref.child("scores").child(id);
+        return $firebaseObject(scoresRef);
+      } else {
+        // Return the root feedback object
+        return $firebaseObject(ref);
+      }
     }
   }
 ]);

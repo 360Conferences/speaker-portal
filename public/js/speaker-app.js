@@ -164,13 +164,14 @@ app.controller("SpeakerCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToas
 });
 
 /* Controller to manage talk submissions */
-app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToast, Submission, UserSubmissions) {
+app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdToast, Submission, UserSubmissions, Feedback) {
   // create an instance of the authentication service
   var auth = $firebaseAuth();
   auth.$onAuthStateChanged(function(firebaseUser) {
     if (firebaseUser == null) return;
 
     $scope.submissions = UserSubmissions(firebaseUser.uid);
+    $scope.feedback = Feedback();
   });
 
   // Add a new submission to the list
@@ -192,12 +193,19 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
 
   // Edit Rule: Not editable during the review period
   $scope.shouldEditItem = function(item) {
-    if ($scope.config.cfp_open) { // CFP is still open
-      return true;
-    } else if ($scope.config.review_open) { // Nothing is editable during review
+    if ($scope.config.review_open) { // Nothing is editable during review
       return false;
-    } else { // All other times, edit is allowed
-      return true;
+    } else { // Otherwise, edit during CFP or if accepted
+      return $scope.config.cfp_open || item.accepted;
+    }
+  }
+
+  // Delete Rule: Not removable during review or once accepted
+  $scope.shouldDeleteItem = function(item) {
+    if ($scope.config.review_open) { // Nothing is removable during review
+      return false;
+    } else {
+      return !item.accepted;
     }
   }
 
@@ -291,5 +299,82 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
       entry.speaker_id = $scope.firebaseUser.uid;
       $scope.submissions.$add(entry);
     }
+  }
+
+  $scope.shouldShowFeedback = function(item) {
+    if ($scope.feedback.scores[item.$id]) {
+      return $scope.config.show_feedback;
+    } else {
+      return false;
+    }
+  }
+
+  $scope.showFeedback = function(evt, item) {
+    var scores = $scope.feedback.scores[item.$id];
+    ShowFeedbackDialog(evt, item, scores);
+  }
+
+  function ShowFeedbackDialog(evt, submission, feedback) {
+    $mdDialog.show({
+      controller: FeedbackDialogController,
+      templateUrl: 'feedback.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        item: submission,
+        scores: feedback
+      }
+    })
+    .then(function() {
+      // Dialog hidden
+    }, function() {
+      // Dialog cancelled
+    });
+  }
+
+  // Handler for feedback dialog events
+  function FeedbackDialogController($scope, $mdDialog, item, scores) {
+    $scope.submission = item;
+    $scope.feedback = scores;
+
+    $scope.getOverallAvg = function(scores) {
+      return getAverageScore("overall", scores);
+    }
+
+    $scope.getTechnicalAvg = function(scores) {
+      return getAverageScore("technical", scores);
+    }
+
+    $scope.getSpeakerAvg = function(scores) {
+      return getAverageScore("speaker", scores);
+    }
+
+    function getAverageScore(score_type, scores) {
+      var sum = 0.0;
+      var count = 0;
+
+      for (var key in scores) {
+        if (scores.hasOwnProperty(key)) {
+          sum += scores[key][score_type];
+          count++;
+        }
+      }
+
+      return sum / count;
+    }
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+
+    $scope.close = function() {
+      $mdDialog.hide();
+    };
   }
 });

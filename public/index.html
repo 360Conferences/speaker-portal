@@ -210,16 +210,28 @@
                   <md-list-item class="md-2-line md-long-text"
                                 ng-repeat="item in submissions">
                     <div class="md-list-item-text" layout="column">
-                      <h3>{{ item.title }}</h3>
-                      <p style="white-space: pre-line;">{{ item.abstract }}</p>
+                      <h3 ng-class="{ 'text-disabled': !shouldEditItem(item) }">
+                        {{ item.title }}
+                      </h3>
+                      <p ng-class="{ 'text-disabled': !shouldEditItem(item) }"
+                         style="white-space: pre-line;">{{ item.abstract }}</p>
                     </div>
-                    <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Edit"
+                    <md-button style="min-width: 48px; min-height: 48px;"
+                               class="md-icon-button" aria-label="Feedback"
+                               ng-show="shouldShowFeedback(item)"
+                               ng-click="showFeedback($event,item)">
+                      <md-icon>feedback</md-icon>
+                    </md-button>
+                    <md-button style="min-width: 48px; min-height: 48px;"
+                               class="md-icon-button" aria-label="Edit"
                                ng-show="shouldEditItem(item)"
                                ng-click="editSubmission($event,item)">
                       <md-icon>edit</md-icon>
                     </md-button>
-                    <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
-                               ng-show="config.cfp_open" ng-click="deleteSubmission($event,item)">
+                    <md-button style="min-width: 48px; min-height: 48px;"
+                               class="md-icon-button" aria-label="Delete"
+                               ng-show="shouldDeleteItem(item)"
+                               ng-click="deleteSubmission($event,item)">
                       <md-icon>delete</md-icon>
                     </md-button>
                   </md-list-item>

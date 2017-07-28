@@ -23,6 +23,13 @@
   height: 200px;
   margin-right: 16px;
 }
+.text-disabled {
+  font-style: italic;
+  color: #ABABAB !important;
+}
+.feedback-row {
+  background: #EEEEEE;
+}
 .sidenav-banner {
   height: 240px;
 }
@@ -40,7 +47,6 @@
   width: 36px;
   height: 36px;
   border-radius: 18px;
-  margin-right: 9px;
   background: #9A9A9A;
 }
 .score-container-small h2 {
@@ -55,7 +61,6 @@
   width: 64px;
   height: 64px;
   border-radius: 32px;
-  margin-right: 16px;
   background: #9A9A9A;
 }
 .score-container h2 {
