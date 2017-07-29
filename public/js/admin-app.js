@@ -740,6 +740,39 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
 /* Controller to view session feedback */
 app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, Config) {
 
+  function getFeedbackAverage(score_type) {
+    var result = {}
+    var sum = 0.0;
+    var count = 0;
+    // Iterate over sessions with feedback
+    for (var key in $scope.feedback.scores) {
+      if ($scope.feedback.scores.hasOwnProperty(key)) {
+        // Iterate over each feedback item
+        var feedbackItem = $scope.feedback.scores[key]
+        for (var uid in feedbackItem) {
+          if (feedbackItem.hasOwnProperty(uid)) {
+            sum += feedbackItem[uid][score_type];
+            count++;
+          }
+        }
+      }
+    }
+
+    return sum / count;
+  }
+
+  $scope.getOverallAvg = function() {
+    return getFeedbackAverage("overall");
+  }
+
+  $scope.getTechnicalAvg = function() {
+    return getFeedbackAverage("technical");
+  }
+
+  $scope.getSpeakerAvg = function() {
+    return getFeedbackAverage("speaker");
+  }
+
   // Return an object of uids and amount of feedback for each
   function getFeedbackCounts() {
     var result = {}
@@ -753,7 +786,7 @@ app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, C
             if (result[uid] != undefined) {
               result[uid]++;
             } else {
-              result[uid] = 0;
+              result[uid] = 1;
             }
           }
         }
