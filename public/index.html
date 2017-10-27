@@ -28,16 +28,10 @@
     <script src="/js/ng-file-upload.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
+    <script src="/js/config.js"></script>
     <script>
       // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyBox_RvfqnAPxCMZCmAbeE7KEkjQ0Isqa0",
-        authDomain: "speakers.360andev.com",
-        databaseURL: "https://andev-app.firebaseio.com",
-        storageBucket: "andev-app.appspot.com",
-        messagingSenderId: "190191541520"
-      };
-      firebase.initializeApp(config);
+      firebase.initializeApp(window.firebaseConfig);
     </script>
   </head>
 
@@ -220,18 +214,21 @@
                                class="md-icon-button" aria-label="Feedback"
                                ng-show="shouldShowFeedback(item)"
                                ng-click="showFeedback($event,item)">
+                      <md-tooltip>Feedback</md-tooltip>
                       <md-icon>feedback</md-icon>
                     </md-button>
                     <md-button style="min-width: 48px; min-height: 48px;"
                                class="md-icon-button" aria-label="Edit"
                                ng-show="shouldEditItem(item)"
                                ng-click="editSubmission($event,item)">
+                      <md-tooltip>Edit</md-tooltip>
                       <md-icon>edit</md-icon>
                     </md-button>
                     <md-button style="min-width: 48px; min-height: 48px;"
                                class="md-icon-button" aria-label="Delete"
                                ng-show="shouldDeleteItem(item)"
                                ng-click="deleteSubmission($event,item)">
+                      <md-tooltip>Delete</md-tooltip>
                       <md-icon>delete</md-icon>
                     </md-button>
                   </md-list-item>

@@ -25,16 +25,10 @@
     <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbRBFvYFEXsc0R-GBgf6GkKShk5sqdcCY"></script>
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
+    <script src="/js/config.js"></script>
     <script>
       // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyBox_RvfqnAPxCMZCmAbeE7KEkjQ0Isqa0",
-        authDomain: "speakers.360andev.com",
-        databaseURL: "https://andev-app.firebaseio.com",
-        storageBucket: "andev-app.appspot.com",
-        messagingSenderId: "190191541520"
-      };
-      firebase.initializeApp(config);
+      firebase.initializeApp(window.firebaseConfig);
     </script>
   </head>
 
