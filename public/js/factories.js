@@ -4,7 +4,7 @@
 angular.module("conference.model", []);
 
 // Database constant values
-var EVENT_ID = "events/360andev-2017"
+var EVENT_ID = "events/chicagoroboto-2018"
 var CONFIG_URL = EVENT_ID + "/config";
 var VENUE_URL = EVENT_ID + "/venue";
 var PROFILE_URL = EVENT_ID + "/profiles";
@@ -12,7 +12,7 @@ var SUBMISSION_URL = EVENT_ID + "/submissions";
 var SESSION_URL = EVENT_ID + "/schedule";
 var FEEDBACK_URL = EVENT_ID + "/feedback";
 // Storage constant values
-var AVATAR_URL = "2017/profiles";
+var AVATAR_URL = "chicagoroboto-2018/profiles";
 
 // Retrieve the app config object
 angular.module("conference.model").factory("Config", ["$firebaseObject",
