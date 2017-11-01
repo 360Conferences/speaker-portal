@@ -179,7 +179,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
     if($scope.speakerForm.$valid && $scope.speaker.agree_terms) {
       // Simple check that the form was filled out
       // Note: Doesn't actually check if profile saved.
-      var entry = {};
+      var entry = {duration: 40};
       ShowEntryDialog(evt, entry);
     } else {
       // Show error toast
@@ -214,6 +214,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
     var entry = {
       id: item.$id,
       title: item.title,
+      duration: item.duration || 40,
       abstract: item.abstract,
       notes: item.notes
     };
@@ -286,6 +287,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
       entryObject.$loaded(
         function(data) {
           entryObject.title = entry.title;
+          entryObject.duration = entry.duration;
           entryObject.abstract = entry.abstract;
           entryObject.notes = entry.notes;
           entryObject.$save();
