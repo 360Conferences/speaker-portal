@@ -82,8 +82,15 @@
   line-height: 24px;
   color: #FFFFFF;
 }
+
 .review-done {
   font-size: 32px;
   width: 32px;
   height: 32px;
+}
+
+/* Text Styles */
+.caption {
+  color: rgba(0, 0, 0, 0.60);
+  font-size: 0.8em;
 }
