@@ -87,12 +87,14 @@ the schedule.
 Before deploying and testing the app, there are a few site-specific configuration
 elements that need to be in place first:
 
+1.  Update `/.firebaserc` with your project name.
+
 1.  Customize the base URLs for the Firebase database (`EVENT_ID`) and
     Firebase storage (`AVATAR_URL`) in `factories.js`.
 
-2.  Customize the values in `/js/config.js`.
+1.  Customize the values in `/js/config.js`.
 
-3.  Create a `config` node at the root of your database URL with the following
+1.  Create a `config` node at the root of your database URL with the following
     keys:
 
     - **admins:** List of Firebase Auth UIDs for each admin account.
@@ -111,7 +113,7 @@ elements that need to be in place first:
 
     **NOTE:** *The data saved by the configuration UI is also stored in this node.*
 
-4.  Provide the following image assets specific to your event:
+1.  Provide the following image assets specific to your event:
 
     - `images/logo.png` - Small icon image.
     - `images/logo-banner.png` - Large image used in sidebar and login pages.
