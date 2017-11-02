@@ -70,9 +70,6 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, SubmissionList) {
 
   // Logic to hide talks from reviewers
   $scope.shouldShowItem = function(item) {
-    // TODO REMOVE!!!!
-    return true;
-
     // Review is closed or not logged in
     if ($scope.firebaseUser == null) return false;
     if (!$scope.config.review_open) return false;
