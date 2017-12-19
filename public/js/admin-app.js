@@ -224,21 +224,34 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     });
   };
 
+  function sessionCountForSpeakerId(speaker_id) {
+    var count = 0;
+    for (var i = 0; i < $scope.submissions.length; i++) {
+      var session = $scope.submissions[i];
+      if (session.speaker_id === speaker_id) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
   // export button functions
   $scope.exportProfiles = function() {
-    var exportList = [];
+    var items = {};
     for (var i = 0; i < $scope.profiles.length; i++) {
       var profile = $scope.profiles[i];
-      exportList.push({
+      item = items[profile.$id] || {
         name: profile.name,
         email: profile.email,
         company: profile.company,
         twitter: profile.twitter,
-        image: $scope.avatarUrls[profile.$id]
-      });
+        image: $scope.avatarUrls[profile.$id],
+        session_count: sessionCountForSpeakerId(profile.$id)
+      };
+      items[profile.$id] = item;
     }
 
-    return exportList;
+    return Object.values(items);
   };
 
   $scope.exportSchedule = function() {
