@@ -413,6 +413,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   }
 
   function ShowEntryDialog(evt, submissionItem, profileItem) {
+    var scores = $scope.feedback.scores || {};
     $mdDialog.show({
       controller: DialogController,
       templateUrl: 'submission.tmpl.html',
@@ -423,7 +424,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       locals: {
         entry: submissionItem,
         speaker: profileItem,
-        feedback: $scope.feedback.scores[submissionItem.$id],
+        feedback: scores[submissionItem.$id],
         profiles: $scope.profiles
       }
     })
