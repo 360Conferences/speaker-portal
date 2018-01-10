@@ -198,7 +198,7 @@
                      <div flex></div>
                    </div>
 
-                   <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }}</h4>
+                   <h4 style="padding: 0px;">{{ profiles.$getRecord(item.speaker_id).name }} - {{ item.duration }} minutes</h4>
                    <p style="padding: 0px;">{{ item.abstract | limitTo:256 }}{{ item.abstract.length > 256 ? '...' : '' }}</p>
                  </div>
                  <!-- Feedback Averages -->

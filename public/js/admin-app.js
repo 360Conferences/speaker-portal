@@ -341,6 +341,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     {value: 'title', label: "Session Title"},
     {value: 'name', label: "Speaker Name"},
     {value: 'score', label: "Reviewer Score"},
+    {value: 'duration', label: "Duration"},
     {value: 'accepted', label: "Accepted Status"}
   ];
   $scope.sortProperty = 'title';
@@ -361,6 +362,9 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
         } else { // False and undefined are treated the same
           return 1;
         }
+      case 'duration':
+        $scope.reverseSort = false;
+        return item.duration;
       case 'title':
       default:
         $scope.reverseSort = false;
