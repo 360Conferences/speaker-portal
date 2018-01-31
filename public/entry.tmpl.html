@@ -15,7 +15,11 @@
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <label>Duration (minutes)</label>
-          <input required name="entryDuration" ng-model="entry.duration" />
+          <md-select required name="entryDuration" ng-model="entry.duration">
+            <md-option ng-repeat="option in config.session_durations" ng-value="option">
+              {{option}} minutes
+            </md-option>
+          </md-select>
         </md-input-container>
         <p>
           Enter an abstract description of your talk. This will be visible to

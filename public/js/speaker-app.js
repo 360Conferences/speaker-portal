@@ -179,7 +179,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
     if($scope.speakerForm.$valid && $scope.speaker.agree_terms) {
       // Simple check that the form was filled out
       // Note: Doesn't actually check if profile saved.
-      var entry = {duration: 40};
+      var entry = {};
       ShowEntryDialog(evt, entry);
     } else {
       // Show error toast
@@ -214,7 +214,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
     var entry = {
       id: item.$id,
       title: item.title,
-      duration: item.duration || 40,
+      duration: item.duration,
       abstract: item.abstract,
       notes: item.notes
     };
@@ -251,7 +251,8 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
       clickOutsideToClose:true,
       fullscreen: true,
       locals: {
-        entry: submissionItem
+        entry: submissionItem,
+        config: $scope.config
       }
     })
     .then(function(entry) {
@@ -262,8 +263,9 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
   }
 
   // Handler for entry dialog events
-  function DialogController($scope, $mdDialog, entry) {
+  function DialogController($scope, $mdDialog, entry, config) {
     $scope.entry = entry;
+    $scope.config = config;
     $scope.hide = function() {
       $mdDialog.hide();
     };
@@ -304,7 +306,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
   }
 
   $scope.shouldShowFeedback = function(item) {
-    if ($scope.feedback.scores[item.$id]) {
+    if ($scope.feedback.scores && $scope.feedback.scores[item.$id]) {
       return $scope.config.show_feedback;
     } else {
       return false;
