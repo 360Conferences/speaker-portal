@@ -101,6 +101,7 @@ elements that need to be in place first:
     - **event_name:** Display name for the event.
     - **event_year:** Display year for the event.
     - **event_dates:** List of event dates in YYYY-MM-DD format.
+    - **session_durations:** Array of supported talk lengths (in minutes)
 
     ```
     "config": {
@@ -108,6 +109,7 @@ elements that need to be in place first:
       "event_name": "360|Conferences",
       "event_year": "2018",
       "event_dates": ["2018-01-01", "2018-01-02"]
+      "session_durations": [45, 20]
     }
     ```
 
