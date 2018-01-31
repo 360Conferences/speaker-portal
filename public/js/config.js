@@ -1,8 +1,8 @@
 
 window.firebaseConfig = window.firebaseConfig || {
-  apiKey: "AIzaSyAxy_w3AbORHk8xUGS_LzBOFs0AgTcF2Ag",
-  authDomain: "chicago-roboto.firebaseapp.com",
-  databaseURL: "https://chicago-roboto.firebaseio.com/",
-  storageBucket: "chicago-roboto.appspot.com",
-  messagingSenderId: "757090852561"
+  apiKey: "AIzaSyBox_RvfqnAPxCMZCmAbeE7KEkjQ0Isqa0",
+  authDomain: "andev-app.firebaseapp.com",
+  databaseURL: "https://andev-app.firebaseio.com",
+  storageBucket: "andev-app.appspot.com",
+  messagingSenderId: "190191541520"
 };
