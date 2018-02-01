@@ -24,11 +24,15 @@
         <md-checkbox ng-model="entry.multiSpeaker" aria-label="Co-presenter">
           I am giving this talk with someone else
         </md-checkbox>
+        <p class="md-block" ng-show="entry.multiSpeaker">
+          NOTE: If your talk is selected, your co-presenters will also need to
+          create a speaker profile.
+        </p>
         <md-input-container class="md-block" ng-show="entry.multiSpeaker" flex-gt-sm>
           <label>Name(s) of Other Presenter(s)</label>
           <input name="entryOthers" ng-model="entry.others"/>
         </md-input-container>
-        <p>
+        <p class="md-block">
           Enter an abstract description of your talk. This will be visible to
           reviewers and publicly on the conference site if your talk is
           selected.
@@ -40,7 +44,7 @@
                     md-maxlength="1200" rows="4" md-select-on-focus>
           </textarea>
         </md-input-container>
-        <p>
+        <p class="md-block">
           Please enter any additional information you would like to provide the
           organizers about you or your talk (links to previous talks, etc.).
           This content will not be shown publicly or to reviewers.

@@ -487,6 +487,12 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
 
     $scope.save = function(item) {
       if ($scope.submissionForm.$valid) {
+        // Set multiSpeaker based on presenter names
+        if (item.others) {
+          item.multiSpeaker = true;
+        } else {
+          item.multiSpeaker = false;
+        }
         $mdDialog.hide(item);
       }
     }
