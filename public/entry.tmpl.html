@@ -13,13 +13,20 @@
           <label>Title</label>
           <input required name="entryTitle" ng-model="entry.title" />
         </md-input-container>
-        <md-input-container class="md-block" flex-gt-sm>
+        <md-input-container class="md-block" layout-align="start" flex-gt-sm>
           <label>Duration (minutes)</label>
           <md-select required name="entryDuration" ng-model="entry.duration">
             <md-option ng-repeat="option in config.session_durations" ng-value="option">
               {{option}} minutes
             </md-option>
           </md-select>
+        </md-input-container>
+        <md-checkbox ng-model="entry.multiSpeaker" aria-label="Co-presenter">
+          I am giving this talk with someone else
+        </md-checkbox>
+        <md-input-container class="md-block" ng-show="entry.multiSpeaker" flex-gt-sm>
+          <label>Name(s) of Other Presenter(s)</label>
+          <input name="entryOthers" ng-model="entry.others"/>
         </md-input-container>
         <p>
           Enter an abstract description of your talk. This will be visible to
@@ -30,20 +37,19 @@
           <label>Abstract</label>
           <textarea required name="entryAbstract"
                     ng-model="entry.abstract"
-                    md-maxlength="1200" rows="6" md-select-on-focus>
+                    md-maxlength="1200" rows="4" md-select-on-focus>
           </textarea>
         </md-input-container>
         <p>
           Please enter any additional information you would like to provide the
-          organizers about you or your talk (links to previous talks, etc.),
-          including if you plan to have a co-presenter. This content will not
-          be shown publicly or to reviewers.
+          organizers about you or your talk (links to previous talks, etc.).
+          This content will not be shown publicly or to reviewers.
         </p>
         <md-input-container class="md-block" flex-gt-sm>
           <label>Additional Notes</label>
           <textarea name="entryNotes"
                     ng-model="entry.notes"
-                    md-maxlength="1200" rows="6" md-select-on-focus>
+                    md-maxlength="1200" rows="4" md-select-on-focus>
           </textarea>
         </md-input-container>
       </div>

@@ -215,6 +215,8 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
       id: item.$id,
       title: item.title,
       duration: item.duration,
+      multiSpeaker: item.multiSpeaker,
+      others: item.others,
       abstract: item.abstract,
       notes: item.notes
     };
