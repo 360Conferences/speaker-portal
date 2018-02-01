@@ -72,11 +72,13 @@
               <p>{{firebaseUser.email}}</p>
             </md-menu-item>
             <md-menu-divider></md-menu-divider>
-            <md-menu-item>
-              <md-button ng-csv="exportProfiles()" filename="profiles.csv">Export Profiles</md-button>
+            <md-menu-item ng-show="validAdminUser">
+              <md-button ng-csv="exportProfiles()" filename="profiles.csv">
+                         Export Profiles</md-button>
             </md-menu-item>
-            <md-menu-item>
-              <md-button ng-csv="exportSchedule()" filename="schedule.csv">Export Accepted Talks</md-button>
+            <md-menu-item ng-show="validAdminUser">
+              <md-button ng-csv="exportSchedule()" filename="schedule.csv">
+                         Export Accepted Talks</md-button>
             </md-menu-item>
             <md-menu-item>
               <md-button ng-click="logoutUser()">Log Out</md-button>
@@ -110,20 +112,22 @@
       </div>
 
       <!-- Logged In View -->
-      <div ng-show="firebaseUser" layout="column">
+      <div ng-show="firebaseUser" class="md-inline-panel">
 
         <!-- Invalid User Card -->
-        <md-card ng-hide="validAdminUser" md-theme="cardTheme" class="md-inline-panel" flex>
+        <md-card ng-hide="validAdminUser" md-theme="cardTheme">
           <md-toolbar>
             <div class="md-toolbar-tools">
               <h3 flex md-truncate>Invalid Admin</h3>
             </div>
           </md-toolbar>
           <md-content layout-padding>
-            <p>
-              I hate to tell you this, but your account is not a valid admin
-              account. You really shouldn't be here right now.
-            </p>
+            <div layout="column" layout-align="center center">
+              <p>
+                I hate to tell you this, but your account is not a valid admin
+                account. You really shouldn't be here right now.
+              </p>
+            </div>
           </md-content>
         </md-card>
 
