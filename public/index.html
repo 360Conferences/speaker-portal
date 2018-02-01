@@ -159,7 +159,7 @@
 
                   <p>
                     Please upload an image for us to use on your speaker profile.
-                    The image should be at least 300x300 resolution.
+                    The image should be at least 512x512 resolution.
                   </p>
                   <div style="width: 200px; height: 200px; position: relative;">
                     <img id="speaker-image" width="200px" height="200px" ng-src="{{avatarUrl}}"/>
@@ -243,7 +243,8 @@
                     the toolbar.
                   </h3>
                   <h3 ng-hide="config.cfp_open" align="center">
-                    {{ config.event_name }} call for papers is no longer open.
+                    {{ config.event_name }} is not currently accepting talk
+                    submissions.
                   </h3>
                 </div>
               </md-content>

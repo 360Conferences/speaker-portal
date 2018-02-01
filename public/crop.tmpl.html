@@ -11,7 +11,8 @@
         <div class="cropArea" ngf-drop ng-model="picFile" ngf-pattern="image/*" layout="column">
             <img-crop image="picFile  | ngfDataUrl"
                       area-type="circle"
-                      result-image-size="300"
+                      area-min-size="128"
+                      result-image-size="512"
                       result-image-format="image/jpeg"
                       result-image-quality="0.85"
                       on-load-done="onLoadDone()"
