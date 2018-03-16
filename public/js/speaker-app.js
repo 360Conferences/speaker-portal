@@ -176,9 +176,9 @@ app.controller("SubmissionCtrl", function($scope, $firebaseAuth, $mdDialog, $mdT
 
   // Add a new submission to the list
   $scope.addSubmission = function(evt) {
-    if($scope.speakerForm.$valid && $scope.speaker.agree_terms) {
-      // Simple check that the form was filled out
-      // Note: Doesn't actually check if profile saved.
+    if($scope.speakerForm.$valid && $scope.speaker.$value !== null) {
+      // Simple check that the form was filled out and profile saved
+      // Saved object no longer has a $value attr, unsaved has it set to null
       var entry = {};
       ShowEntryDialog(evt, entry);
     } else {
