@@ -1230,7 +1230,7 @@ crop.service('cropEXIF', [function() {
           exifData, gpsData,
           tiffOffset = start + 6;
 
-      // test for TIFF validity and endianness
+      // tests for TIFF validity and endianness
       if (file.getUint16(tiffOffset) == 0x4949) {
           bigEnd = false;
       } else if (file.getUint16(tiffOffset) == 0x4D4D) {
