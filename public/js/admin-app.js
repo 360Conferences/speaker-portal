@@ -500,7 +500,7 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
 });
 
 /* Controller to manage talk schedule */
-app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Config) {
+app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Config, SessionApi, SpeakerApi) {
 
   //Clean labels for each time slot
   $scope.getSlotLabel = function(dateString) {
@@ -587,6 +587,85 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
   $scope.clearScheduleItem = function(scheduleItem) {
     $scope.schedule.$remove(scheduleItem);
   };
+
+  //Update the speakers/sessions endpoints
+  $scope.publishSchedule = function() {
+    // Clear the existing data
+    var sessions = {}
+    var speakers = {}
+
+    angular.forEach($scope.schedule, function(item) {
+      if (item.event_type === "session") {
+        var submission = $scope.submissions.$getRecord(item.submission_id);
+        sessions[item.$id] = sessions[item.$id] || {
+          id: item.submission_id,
+          type: item.event_type,
+          title: submission.title,
+          description: submission.abstract,
+          start_time: item.start_time,
+          end_time: item.end_time,
+          location: item.room,
+          speakers: item.speakers
+        };
+
+        for (var i = 0; i < item.speakers.length; i++) {
+          var speaker_id = item.speakers[i];
+          var profile = $scope.profiles.$getRecord(speaker_id);
+          speakers[speaker_id] = speakers[speaker_id] || {
+            id: speaker_id,
+            name: profile.name,
+            company: profile.company,
+            twitter: profile.twitter,
+            email: profile.email,
+            bio: profile.bio
+          };
+        }
+      } else if (item.event_type === "event") {
+        sessions[item.$id] = sessions[item.$id] || {
+          id: item.$id,
+          type: item.event_type,
+          title: item.title,
+          description: item.description,
+          start_time: item.start_time,
+          end_time: item.end_time,
+          location: item.location,
+          address: item.address || null
+        };
+      }
+    })
+
+    // Publish the results to Firebase
+    SpeakerApi().$ref().set(speakers, function(error) {
+      if (error) {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Error publishing speakers. Please try again later.')
+            .hideDelay(3000)
+        );
+      } else {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Speakers Published')
+            .hideDelay(3000)
+        );
+      }
+    });
+    SessionApi().$ref().set(sessions, function(error) {
+      if (error) {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Error publishing sessions. Please try again later.')
+            .hideDelay(3000)
+        );
+      } else {
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('Sessions Published')
+            .hideDelay(3000)
+        );
+      }
+    });
+  }
 
   function ShowScheduleDialog(evt, submissionItem, sessionInfo) {
     $mdDialog.show({
@@ -822,7 +901,11 @@ app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, C
   }
 
   $scope.getSessionFeedbackCount = function() {
-    return Object.keys($scope.feedback.scores).length;
+    if ($scope.feedback.scores) {
+      return Object.keys($scope.feedback.scores).length
+    }
+
+    return 0;
   };
 
   $scope.getAttendeeFeedbackCount = function() {

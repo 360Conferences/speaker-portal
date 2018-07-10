@@ -11,6 +11,9 @@ var PROFILE_URL = EVENT_ID + "/profiles";
 var SUBMISSION_URL = EVENT_ID + "/submissions";
 var SESSION_URL = EVENT_ID + "/schedule";
 var FEEDBACK_URL = EVENT_ID + "/feedback";
+
+var API_SPEAKERS = EVENT_ID + "/speakers";
+var API_SESSIONS = EVENT_ID + "/sessions";
 // Storage constant values
 var AVATAR_URL = "360andev-2018/profiles";
 
@@ -167,6 +170,28 @@ angular.module("conference.model").factory("SessionList", ["$firebaseArray",
       var ref = firebase.database().ref(SESSION_URL);
 
       return $firebaseArray(ref);
+    }
+  }
+]);
+
+// Retrieve speakers API endpoint data
+angular.module("conference.model").factory("SpeakerApi", ["$firebaseObject",
+  function($firebaseObject) {
+    return function() {
+      var ref = firebase.database().ref(API_SPEAKERS);
+
+      return $firebaseObject(ref);
+    }
+  }
+]);
+
+// Retrieve sessions API endpoint data
+angular.module("conference.model").factory("SessionApi", ["$firebaseObject",
+  function($firebaseObject) {
+    return function() {
+      var ref = firebase.database().ref(API_SESSIONS);
+
+      return $firebaseObject(ref);
     }
   }
 ]);

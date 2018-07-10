@@ -8,22 +8,30 @@
         },
         "profiles": {
           "$uid": {
-            ".read": true,
+            ".read": "auth.uid != null",
             ".write": "auth.uid == $uid"
           },
-          ".read": true,
+          ".read": "auth.uid != null",
           ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "submissions": {
-          ".read": true,
+          ".read": "auth.uid != null",
           ".write": "auth.uid != null"
         },
         "schedule": {
-          ".read": true,
+          ".read": "auth.uid != null",
           ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "venue": {
-           ".read": true,
+          ".read": true,
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
+        },
+        "sessions": {
+          ".read": true,
+          ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
+        },
+        "speakers": {
+          ".read": true,
           ".write": "root.child('events').child($eventid).child('/config/admins').hasChild(auth.uid)"
         },
         "feedback": {
