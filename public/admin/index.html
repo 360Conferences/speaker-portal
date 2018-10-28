@@ -245,6 +245,9 @@
                            ng-show="unscheduled.length > 0" layout-align="end none">warning</md-icon>
                   <md-icon ng-click="showScheduleStatus()"
                            ng-hide="unscheduled.length > 0" layout-align="end none">done</md-icon>
+                  <md-button class="md-raised md-primary" aria-label="Publish"
+                           ng-disabled="unscheduled.length > 0"
+                           ng-click="publishSchedule()">Publish</md-button>
                 </div>
                 <md-tabs md-border-bottom md-autoselect md-dynamic-height>
                   <md-tab ng-repeat="date in config.event_dates"
