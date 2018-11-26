@@ -1,6 +1,6 @@
 service firebase.storage {
-  match /b/andev-app.appspot.com/o {
-  	match /{year}/profiles/{profileId} {
+  match /b/chicago-roboto.appspot.com/o {
+  	match /chicagoroboto-2019/profiles/{profileId} {
     	allow read: if true;
     	allow write: if request.resource.contentType.matches('image/.*');
     }
