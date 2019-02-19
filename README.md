@@ -87,7 +87,8 @@ the schedule.
 Before deploying and testing the app, there are a few site-specific configuration
 elements that need to be in place first:
 
-1.  Update `/.firebaserc` with your project name.
+1.  Initlalize your Firebase project in the root directory using the
+    [Firebase CLI](https://firebase.google.com/docs/cli/).
 
 1.  Customize the base URLs for the Firebase database (`EVENT_ID`) and
     Firebase storage (`AVATAR_URL`) in `factories.js`.
