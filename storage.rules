@@ -1,5 +1,5 @@
 service firebase.storage {
-  match /b/andev-app.appspot.com/o {
+  match /b/{bucket}/o {
   	match /{year}/profiles/{profileId} {
     	allow read: if true;
     	allow write: if request.resource.contentType.matches('image/.*');
