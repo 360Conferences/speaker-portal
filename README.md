@@ -90,9 +90,6 @@ elements that need to be in place first:
 1.  Initlalize your Firebase project in the root directory using the
     [Firebase CLI](https://firebase.google.com/docs/cli/).
 
-1.  Customize the base URLs for the Firebase database (`EVENT_ID`) and
-    Firebase storage (`AVATAR_URL`) in `factories.js`.
-
 1.  Add a `/js/config.js` file with the following attributes:
 
     ```
