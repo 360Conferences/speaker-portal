@@ -4,6 +4,7 @@
     <meta property="og:title" content="Speaker Submission Portal" />
     <meta property="og:image" content="/images/logo-banner.png" />
     <meta property="og:description" content="Submit a new conference talk and manage your speaker profile" />
+    <script src="/js/config.js"></script>
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -28,10 +29,10 @@
     <script src="/js/ng-file-upload.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
-    <script src="/js/config.js"></script>
+    
     <script>
       // Initialize Firebase
-      firebase.initializeApp(window.firebaseConfig);
+      firebase.initializeApp(window.__config.firebase);
     </script>
   </head>
 

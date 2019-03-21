@@ -93,7 +93,20 @@ elements that need to be in place first:
 1.  Customize the base URLs for the Firebase database (`EVENT_ID`) and
     Firebase storage (`AVATAR_URL`) in `factories.js`.
 
-1.  Customize the values in `/js/config.js`.
+1.  Add a `/js/config.js` file with the following attributes:
+
+    ```
+    window.__config = window.__config || {};
+    window.__config.firebase = {
+      apiKey: "...",
+      authDomain: "...",
+      databaseURL: "...",
+      storageBucket: "...",
+      messagingSenderId: "..."
+    };
+    window.__config.event = "<event-id>";
+    window.__config.storage = "<storage-bucket>";
+    ```
 
 1.  Create a `config` node at the root of your database URL with the following
     keys:

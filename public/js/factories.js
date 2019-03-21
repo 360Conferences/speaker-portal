@@ -4,18 +4,15 @@
 angular.module("conference.model", []);
 
 // Database constant values
-var EVENT_ID = "events/360andev-2018"
-var CONFIG_URL = EVENT_ID + "/config";
-var VENUE_URL = EVENT_ID + "/venue";
-var PROFILE_URL = EVENT_ID + "/profiles";
-var SUBMISSION_URL = EVENT_ID + "/submissions";
-var SESSION_URL = EVENT_ID + "/schedule";
-var FEEDBACK_URL = EVENT_ID + "/feedback";
+var CONFIG_URL = `${window.__config.event}/config`;
+var VENUE_URL = `${window.__config.event}/venue`;
+var PROFILE_URL = `${window.__config.event}/profiles`;
+var SUBMISSION_URL = `${window.__config.event}/submissions`;
+var SESSION_URL = `${window.__config.event}/schedule`;
+var FEEDBACK_URL = `${window.__config.event}/feedback`;
 
-var API_SPEAKERS = EVENT_ID + "/speakers";
-var API_SESSIONS = EVENT_ID + "/sessions";
-// Storage constant values
-var AVATAR_URL = "360andev-2018/profiles";
+var API_SPEAKERS = `${window.__config.event}/speakers`;
+var API_SESSIONS = `${window.__config.event}/sessions`;
 
 // Retrieve the app config object
 angular.module("conference.model").factory("Config", ["$firebaseObject",
@@ -87,7 +84,7 @@ angular.module("conference.model").factory("ProfileList", ["$firebaseArray",
 angular.module("conference.model").factory("Avatar", ["$firebaseStorage",
   function($firebaseStorage) {
     return function(uid) {
-      var ref = firebase.storage().ref(AVATAR_URL);
+      var ref = firebase.storage().ref(window.__config.storage);
       var avatarRef = ref.child(uid);
 
       return $firebaseStorage(avatarRef);

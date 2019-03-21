@@ -1,6 +1,7 @@
 <html ng-app="ReviewerApp">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/js/config.js"></script>
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -19,10 +20,10 @@
     <script src="/js/factories.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/app-default.css">
-    <script src="/js/config.js"></script>
+    
     <script>
       // Initialize Firebase
-      firebase.initializeApp(window.firebaseConfig);
+      firebase.initializeApp(window.__config.firebase);
     </script>
   </head>
 
