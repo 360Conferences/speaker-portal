@@ -66,6 +66,9 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, SubmissionList) {
 
     // set up data binding
     $scope.submissions = SubmissionList();
+    $scope.submissions.$loaded().then(function() {
+      shuffle($scope.submissions, firebaseUser.uid);
+    });
   });
 
   // Logic to hide talks from reviewers
@@ -88,3 +91,16 @@ app.controller("ReviewCtrl", function($scope, $firebaseAuth, SubmissionList) {
     return true;
   };
 });
+
+// Taken from https://bost.ocks.org/mike/shuffle/compare.html
+function shuffle(array, seed) {
+  Math.seedrandom(seed);
+
+  var m = array.length, t, i;
+  while (m) {
+    i = Math.floor(Math.random() * m--);
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+}
