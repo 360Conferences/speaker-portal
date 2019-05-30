@@ -240,15 +240,18 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     var items = {};
     for (var i = 0; i < $scope.profiles.length; i++) {
       var profile = $scope.profiles[i];
-      item = items[profile.$id] || {
-        name: profile.name,
-        email: profile.email,
-        company: profile.company,
-        twitter: profile.twitter,
-        image: $scope.avatarUrls[profile.$id],
-        session_count: sessionCountForSpeakerId(profile.$id)
-      };
-      items[profile.$id] = item;
+      if (sessionCountForSpeakerId(profile.$id) > 0) {
+        item = items[profile.$id] || {
+          name: profile.name,
+          email: profile.email,
+          company: profile.company,
+          twitter: profile.twitter,
+          image: $scope.avatarUrls[profile.$id]
+        };
+        items[profile.$id] = item;
+      } else {
+        console.log(`Skipping export of ${profile.name}: No submissions`);
+      }
     }
 
     return Object.values(items);
