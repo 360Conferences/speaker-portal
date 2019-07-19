@@ -37,6 +37,10 @@
         "feedback": {
           ".read": "auth.uid != null",
           ".write": true
+        },
+        "favorites": {
+          ".read": "auth.uid != null",
+          ".write": true
         }
       },
       ".read": true,

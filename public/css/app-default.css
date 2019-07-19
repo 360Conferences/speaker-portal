@@ -84,6 +84,13 @@
   line-height: 24px;
   color: #FFFFFF;
 }
+.favorite-container {
+  display: flex;
+}
+.favorite-container p {
+  font-size: 14px;
+  color: rgba(0,0,0,0.54);
+}
 
 .review-done {
   font-size: 32px;
