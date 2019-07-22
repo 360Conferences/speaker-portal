@@ -21,7 +21,7 @@ var app = angular
     });
 
 /* Controller to manage user login */
-app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, $mdToast, $mdConstant, Config, Venue, Avatar, Feedback, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
+app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav, $mdToast, $mdConstant, Config, Venue, Avatar, Feedback, Favorites, Profile, ProfileList, Submission, SubmissionList, AcceptedSubmissions, Session, SessionList) {
   // add config parameters
   $scope.config = Config();
   $scope.venue = Venue();
@@ -125,6 +125,7 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     $scope.acceptedSubmissions = AcceptedSubmissions();
     $scope.schedule = SessionList();
     $scope.feedback = Feedback();
+    $scope.favorites = Favorites();
 
     // Schedule mapped by start time for UI
     $scope.scheduleMap = {};
@@ -173,6 +174,15 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
       })
     });
   });
+
+  // Report the count of users favoriting the given session
+  $scope.countFavorites = function(item) {
+    var filtered = Object.keys($scope.favorites).filter(function(key) {
+      return !key.startsWith("$") // Ignore AngularFire keys
+        && $scope.favorites[key].hasOwnProperty(item.$id);
+    });
+    return filtered.length;
+  }
 
   function ComputeReviewScore(item, scores) {
     //Set the default value

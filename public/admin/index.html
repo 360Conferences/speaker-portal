@@ -263,7 +263,7 @@
                                  ng-click="updateScheduleItem($event,item)"
                                  ng-switch="item.event_type" flex>
                           <md-list-item class="md-2-line"
-                                        layout="row" layout-align="center center">
+                                        layout="row">
                             <div class="md-list-item-text" layout="column" layout-padding>
                               <!-- Session Data -->
                               <h3 style="padding: 0px;" ng-switch-when="session">{{ submissions.$getRecord(item.submission_id).title }}</h3>
@@ -279,6 +279,11 @@
                               <h4 style="padding: 0px;" ng-switch-when="event">
                                 {{ item.start_time | date:'HH:mm' }}-{{ item.end_time | date:'HH:mm' }}
                               </h4>
+                            </div>
+                            <div class="favorite-container"
+                                 ng-switch-when="session" ng-if="countFavorites(item) > 0">
+                              <p>{{ countFavorites(item) }}</p>
+                              <md-icon>star</md-icon>
                             </div>
                             <md-button style="min-width: 48px;" class="md-icon-button" aria-label="Delete"
                                       ng-click="clearScheduleItem(item)">

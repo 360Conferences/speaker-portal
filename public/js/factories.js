@@ -10,6 +10,7 @@ var PROFILE_URL = `${window.__config.event}/profiles`;
 var SUBMISSION_URL = `${window.__config.event}/submissions`;
 var SESSION_URL = `${window.__config.event}/schedule`;
 var FEEDBACK_URL = `${window.__config.event}/feedback`;
+var FAVORITES_URL = `${window.__config.event}/favorites`;
 
 var API_SPEAKERS = `${window.__config.event}/speakers`;
 var API_SESSIONS = `${window.__config.event}/sessions`;
@@ -46,6 +47,22 @@ angular.module("conference.model").factory("Feedback", ["$firebaseObject",
         return $firebaseObject(scoresRef);
       } else {
         // Return the root feedback object
+        return $firebaseObject(ref);
+      }
+    }
+  }
+]);
+
+// Retrieve the favorites for a given session id
+angular.module("conference.model").factory("Favorites", ["$firebaseObject",
+  function($firebaseObject) {
+    return function(id) {
+      var ref = firebase.database().ref(FAVORITES_URL);
+      if (id) {
+        var favRef = ref.orderByChild(id).equalTo(true);
+        return $firebaseObject(favRef);
+      } else {
+        // Return the entire favorites set
         return $firebaseObject(ref);
       }
     }
