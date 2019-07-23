@@ -1,0 +1,38 @@
+<md-dialog aria-label="Session Feedback">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Session Feedback</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="Close"
+                   ng-click="close()">
+          <md-icon>close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <h3>{{ entry.title }}</h3>
+        <table>
+          <tr>
+            <th layout-padding>Overall Experience</th>
+            <th layout-padding>Technical Level</th>
+            <th layout-padding>Speaker Skills</th>
+            <th layout-padding>Comments</th>
+          </tr>
+          <tr ng-class-odd="'feedback-row'" ng-repeat="item in feedback">
+            <td>{{item.overall | number:1}}</td>
+            <td>{{item.technical | number:1}}</td>
+            <td>{{item.speaker | number:1}}</td>
+            <td>{{item.comment }}</td>
+          </tr>
+        </table>
+
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+    </md-dialog-actions>
+
+</md-dialog>

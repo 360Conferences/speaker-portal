@@ -24,16 +24,20 @@
           <h2>{{getSpeakerAvg(feedback) | number:1}}</h2>
         </div>
       </div>
-      <div layout="row">
-        <h4 style="text-align: center" flex>Overall Experience</h4>
-        <h4 style="text-align: center" flex>Technical Level</h4>
-        <h4 style="text-align: center" flex>Speaker Skills</h4>
-      </div>
-      <div ng-repeat="(uid, item) in feedback" ng-class-odd="'feedback-row'" layout="row">
-        <p style="text-align: center" flex>{{item.overall | number:1}}</p>
-        <p style="text-align: center" flex>{{item.technical | number:1}}</p>
-        <p style="text-align: center" flex>{{item.speaker | number:1}}</p>
-      </div>
+      <table>
+        <tr>
+          <th layout-padding>Overall Experience</th>
+          <th layout-padding>Technical Level</th>
+          <th layout-padding>Speaker Skills</th>
+          <th layout-padding>Comments</th>
+        </tr>
+        <tr ng-class-odd="'feedback-row'" ng-repeat="(uid, item) in feedback">
+          <td>{{item.overall | number:1}}</td>
+          <td>{{item.technical | number:1}}</td>
+          <td>{{item.speaker | number:1}}</td>
+          <td>{{item.comment }}</td>
+        </tr>
+      </table>
     </div>
   </md-dialog-content>
 </md-dialog>
