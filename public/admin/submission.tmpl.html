@@ -60,23 +60,6 @@
           </ul>
         </div>
 
-        <div ng-show="feedback">
-          <h4>Feedback Scores</h4>
-          <table>
-            <tr>
-              <th layout-padding>Overall Experience</th>
-              <th layout-padding>Technical Level</th>
-              <th layout-padding>Speaker Skills</th>
-              <th layout-padding>Comments</th>
-            </tr>
-            <tr ng-class-odd="'feedback-row'" ng-repeat="item in feedback">
-              <td>{{item.overall | number:1}}</td>
-              <td>{{item.technical | number:1}}</td>
-              <td>{{item.speaker | number:1}}</td>
-              <td>{{item.comment }}</td>
-            </tr>
-          </table>
-        </div>
       </div>
     </md-dialog-content>
 

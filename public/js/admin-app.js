@@ -385,32 +385,6 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
     }
   }
 
-  $scope.getOverallAvg = function(scores) {
-    return getAverageScore("overall", scores);
-  }
-
-  $scope.getTechnicalAvg = function(scores) {
-    return getAverageScore("technical", scores);
-  }
-
-  $scope.getSpeakerAvg = function(scores) {
-    return getAverageScore("speaker", scores);
-  }
-
-  function getAverageScore(score_type, scores) {
-    var sum = 0.0;
-    var count = 0;
-
-    for (var key in scores) {
-      if (scores.hasOwnProperty(key)) {
-        sum += scores[key][score_type];
-        count++;
-      }
-    }
-
-    return sum / count;
-  }
-
   $scope.onTalkSelectionChanged = function(submissionItem) {
     if (!submissionItem.accepted) {
       // Delete any existing schedule information
@@ -431,7 +405,6 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
 
   function ShowEntryDialog(evt, submissionItem, profileItem) {
     var submission = submissionItem || {};
-    var scores = $scope.feedback.scores || {};
     $mdDialog.show({
       controller: DialogController,
       templateUrl: 'submission.tmpl.html',
@@ -442,7 +415,6 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
       locals: {
         entry: submission,
         speaker: profileItem,
-        feedback: scores[submission.$id],
         profiles: $scope.profiles
       }
     })
@@ -484,10 +456,9 @@ app.controller("SubmissionCtrl", function($scope, $firebaseObject, $firebaseArra
   }
 
   // Handler for entry dialog events
-  function DialogController($scope, $mdDialog, entry, speaker, feedback, profiles) {
+  function DialogController($scope, $mdDialog, entry, speaker, profiles) {
     $scope.entry = entry;
     $scope.speaker = speaker;
-    $scope.feedback = feedback;
     $scope.speakers = profiles;
 
     $scope.hide = function() {
@@ -855,10 +826,9 @@ app.controller("ScheduleCtrl", function($scope, $mdDialog, $mdToast, Session, Co
 });
 
 /* Controller to view session feedback */
-app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, Config) {
+app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, SubmissionList, Feedback, Config) {
 
   function getFeedbackAverage(score_type) {
-    var result = {}
     var sum = 0.0;
     var count = 0;
     // Iterate over sessions with feedback
@@ -866,28 +836,50 @@ app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, C
       if ($scope.feedback.scores.hasOwnProperty(key)) {
         // Iterate over each feedback item
         var feedbackItem = $scope.feedback.scores[key]
-        for (var uid in feedbackItem) {
-          if (feedbackItem.hasOwnProperty(uid)) {
-            sum += feedbackItem[uid][score_type];
-            count++;
-          }
-        }
+        sum += getAverageScore(score_type, feedbackItem);
+        count++;
       }
     }
 
     return sum / count;
   }
 
-  $scope.getOverallAvg = function() {
+  function getAverageScore(score_type, scores) {
+    var sum = 0.0;
+    var count = 0;
+
+    for (var key in scores) {
+      if (scores.hasOwnProperty(key)) {
+        sum += scores[key][score_type];
+        count++;
+      }
+    }
+
+    return sum / count;
+  }
+
+  $scope.getOverallTotal = function() {
     return getFeedbackAverage("overall");
   }
 
-  $scope.getTechnicalAvg = function() {
+  $scope.getTechnicalTotal = function() {
     return getFeedbackAverage("technical");
   }
 
-  $scope.getSpeakerAvg = function() {
+  $scope.getSpeakerTotal = function() {
     return getFeedbackAverage("speaker");
+  }
+
+  $scope.getOverallAvg = function(scores) {
+    return getAverageScore("overall", scores);
+  }
+
+  $scope.getTechnicalAvg = function(scores) {
+    return getAverageScore("technical", scores);
+  }
+
+  $scope.getSpeakerAvg = function(scores) {
+    return getAverageScore("speaker", scores);
   }
 
   // Return an object of uids and amount of feedback for each
@@ -936,6 +928,39 @@ app.controller("FeedbackCtrl", function($scope, $mdDialog, $mdToast, Feedback, C
     }
 
     return count;
+  }
+
+  $scope.showFeedbackDetail = function(evt, submissionItem, feedbackItem) {
+    ShowFeedbackDialog(evt, submissionItem, feedbackItem);
+  }
+
+  function ShowFeedbackDialog(evt, submissionItem, feedbackItem) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'feedback.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: evt,
+      clickOutsideToClose:true,
+      fullscreen: true,
+      locals: {
+        entry: submissionItem,
+        feedback: feedbackItem
+      }
+    });
+  }
+
+  // Handler for feedback dialog events
+  function DialogController($scope, $mdDialog, entry, feedback) {
+    $scope.entry = entry;
+    $scope.feedback = feedback;
+
+    $scope.hide = function() {
+      $mdDialog.hide();
+    }
+
+    $scope.close = function() {
+      $mdDialog.cancel();
+    }
   }
 
   $scope.showRaffleList = function(evt) {
