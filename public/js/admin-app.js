@@ -27,9 +27,6 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
   $scope.venue = Venue();
   $scope.validAdminUser = false;
 
-  // init geocoder
-  $scope.geocoder = new google.maps.Geocoder();
-
   // Set the navigation selections
   $scope.toggleSidenav = function() {
     $mdSidenav('left').toggle();
@@ -63,10 +60,14 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
     })
     .then(function(venue) {
       // Geocode the address, then save
-      $scope.geocoder.geocode( { 'address': venue.address}, function(results, status) {
-          if (status == 'OK') {
-            venue.latitude = results[0].geometry.location.lat();
-            venue.longitude = results[0].geometry.location.lng();
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(venue.address)}&key=${window.__config.maps.apiKey}`;
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          const {results, status} = data;
+          if (status === 'OK') {
+            venue.latitude = results[0].geometry.location.lat;
+            venue.longitude = results[0].geometry.location.lng;
             venue.$save().then(function() {
               $mdToast.show(
                 $mdToast.simple()
@@ -81,6 +82,14 @@ app.controller("AuthCtrl", function($scope, $firebaseAuth, $mdDialog, $mdSidenav
                 .hideDelay(3000)
             );
           }
+        })
+        .catch((error) => {
+          console.error(error);
+          $mdToast.show(
+            $mdToast.simple()
+              .textContent('Unable to geocode venue location')
+              .hideDelay(3000)
+          );
         });
     },function() {
       // Dialog cancelled

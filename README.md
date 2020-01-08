@@ -90,6 +90,10 @@ elements that need to be in place first:
 1.  Initlalize your Firebase project in the root directory using the
     [Firebase CLI](https://firebase.google.com/docs/cli/).
 
+1.  Obtain an API key for use with the Google Maps
+    [Geocoder API](https://developers.google.com/maps/documentation/geocoding/get-api-key).
+    This key is required to encode the venue location for the mobile apps.
+
 1.  Add a `/js/config.js` file with the following attributes:
 
     ```
@@ -100,6 +104,9 @@ elements that need to be in place first:
       databaseURL: "...",
       storageBucket: "...",
       messagingSenderId: "..."
+    };
+    window.__config.maps = {
+      apiKey: "..."
     };
     window.__config.event = "<event-id>";
     window.__config.storage = "<storage-bucket>";
